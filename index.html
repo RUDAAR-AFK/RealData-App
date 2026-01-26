@@ -2,39 +2,54 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>RealData Immo - Générateur de Dossier</title>
+    <title>RealData Immo - Générateur</title>
     <style>
-        body { font-family: sans-serif; background-color: #0a192f; color: #f0ebd8; padding: 20px; }
-        .container { max-width: 800px; margin: auto; background: #112240; padding: 30px; border-radius: 10px; }
-        h1 { color: #f0ebd8; border-bottom: 2px solid #f0ebd8; padding-bottom: 10px; }
-        label { display: block; margin-top: 15px; font-weight: bold; }
-        input, select, textarea { width: 100%; padding: 10px; margin-top: 5px; border-radius: 5px; border: none; }
-        .btn { background-color: #f0ebd8; color: #0a192f; padding: 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 20px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0a192f; color: #f0ebd8; padding: 20px; line-height: 1.6; }
+        .container { max-width: 800px; margin: auto; background: #112240; padding: 30px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h1 { color: #f0ebd8; border-bottom: 2px solid #f0ebd8; padding-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
+        .section { margin-bottom: 25px; padding: 15px; border: 1px solid #233554; border-radius: 5px; }
+        label { display: block; margin-top: 15px; font-weight: bold; color: #64ffda; }
+        input { width: 100%; padding: 12px; margin-top: 5px; border-radius: 5px; border: 1px solid #233554; background: #0a192f; color: white; box-sizing: border-box; }
+        .result-box { background: #64ffda; color: #0a192f; padding: 20px; border-radius: 5px; margin-top: 20px; text-align: center; font-size: 1.5rem; font-weight: bold; }
+        .btn { width: 100%; background-color: #f0ebd8; color: #0a192f; padding: 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 20px; font-size: 1rem; }
+        .btn:hover { background-color: #64ffda; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>REALDATA IMMO - Nouveau Dossier</h1>
+        <h1>REALDATA IMMO</h1>
         
-        <label>Nom de l'immeuble (ex: Ancienne Gendarmerie)</label>
-        <input type="text" placeholder="Entrez le nom ou l'histoire courte">
+        <div class="section">
+            <label>Nom du projet</label>
+            <input type="text" id="nomProjet" placeholder="Ex: Ancienne Gendarmerie Léré">
+            
+            <label>Prix d'achat FAI (€)</label>
+            <input type="number" id="prix" placeholder="Ex: 400000" oninput="calculerRentabilite()">
+            
+            <label>Loyer mensuel total HC (€)</label>
+            <input type="number" id="loyers" placeholder="Ex: 3128" oninput="calculerRentabilite()">
+        </div>
 
-        <label>Adresse complète</label>
-        <input type="text" placeholder="ex: 23b route de Gien, Léré">
+        <div id="resultatRentabilite" class="result-box">
+            Rentabilité Brute : 0 %
+        </div>
 
-        <label>Nombre de logements</label>
-        <input type="number" placeholder="ex: 6">
-
-        <label>Nombre de boxes/garages</label>
-        <input type="number" placeholder="ex: 8">
-
-        <label>Prix de vente FAI (€)</label>
-        <input type="number" id="prix" placeholder="ex: 400000">
-
-        <label>Loyer mensuel total HC (€)</label>
-        <input type="number" id="loyers" placeholder="Somme des loyers">
-
-        <button class="btn" onclick="alert('Bientôt : Génération du PDF !')">GÉNÉRER LE DOSSIER PRO</button>
+        <button class="btn">GÉNÉRER LE DOSSIER PDF</button>
     </div>
+
+    <script>
+        function calculerRentabilite() {
+            const prix = document.getElementById('prix').value;
+            const loyers = document.getElementById('loyers').value;
+            const affichage = document.getElementById('resultatRentabilite');
+
+            if (prix > 0 && loyers > 0) {
+                const rentabilite = ((loyers * 12) / prix) * 100;
+                affichage.innerHTML = "Rentabilité Brute : " + rentabilite.toFixed(2) + " %";
+            } else {
+                affichage.innerHTML = "Rentabilité Brute : 0 %";
+            }
+        }
+    </script>
 </body>
 </html>
