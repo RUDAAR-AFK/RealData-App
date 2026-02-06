@@ -1,151 +1,70 @@
 /**
- * Configuration des parcours de collecte par type de bien
+ * BIBLIOTHÈQUE DE QUESTIONS EXPERTES REALDATA IMMO
+ * 10 points essentiels adaptés par type de dossier
  */
 const parcours = {
-  MAISON: [
-    { q: "Prix Net Vendeur (€) ?", cle: "prix" },
-    { q: "Surface habitable (m2) ?", cle: "surface" },
-    { q: "Surface de la parcelle / terrain (m2) ?", cle: "terrain" },
-    { q: "État général (Travaux à prévoir ?) ?", cle: "technique" },
-    { q: "DPE (Classe énergétique) ?", cle: "dpe" },
-    { q: "Adresse du bien ?", cle: "adresse" },
-  ],
-  APPARTEMENT: [
-    { q: "Prix Net Vendeur (€) ?", cle: "prix" },
-    { q: "Surface Carrez (m2) ?", cle: "surface" },
-    { q: "Étage et ascenseur ?", cle: "etage" },
-    { q: "Montant des charges de copropriété annuelles (€) ?", cle: "charges" },
-    { q: "DPE (Classe énergétique) ?", cle: "dpe" },
-    { q: "Adresse du bien ?", cle: "adresse" },
-  ],
-  IMMEUBLE: [
-    { q: "Prix Net Vendeur de l'ensemble (€) ?", cle: "prix" },
-    { q: "Nombre total de lots ?", cle: "lots" },
-    { q: "Surface totale (m2) ?", cle: "surface" },
-    { q: "État de la toiture et des communs ?", cle: "technique" },
-    { q: "Montant de la Taxe Foncière (€) ?", cle: "taxe" },
-    { q: "Adresse de l'immeuble ?", cle: "adresse" },
-  ],
-  TERRAIN: [
-    { q: "Prix Net Vendeur (€) ?", cle: "prix" },
-    { q: "Surface du terrain (m2) ?", cle: "surface" },
-    { q: "Le terrain est-il viabilisé (Oui/Non) ?", cle: "technique" },
-    { q: "Zone au PLU (ex: U, AU, N...) ?", cle: "plu" },
-    { q: "Adresse du terrain ?", cle: "adresse" },
-  ],
-  COMMERCE: [
-    { q: "Prix Net Vendeur (€) ?", cle: "prix" },
-    { q: "Loyer annuel HC encaissé (€) ?", cle: "loyer" },
-    { q: "Surface commerciale (m2) ?", cle: "surface" },
-    { q: "Type de bail (3/6/9, précaire...) ?", cle: "bail" },
-    { q: "Taxe foncière à la charge du preneur ?", cle: "taxe" },
-    { q: "Adresse du local ?", cle: "adresse" },
-  ],
-  PARKING: [
-    { q: "Prix du lot de parkings/boxs (€) ?", cle: "prix" },
-    { q: "Nombre d'emplacements ?", cle: "lots" },
-    { q: "Le site est-il sécurisé (Portail, Caméra) ?", cle: "technique" },
-    { q: "Charges de copro annuelles (€) ?", cle: "charges" },
-    { q: "Adresse précise ?", cle: "adresse" },
-  ],
-};
-
-let typeBienSelectionne = null;
-let indexQuestion = 0;
-let reponses = {};
-
-function ajouterMessage(texte, auteur) {
-  const box = document.getElementById("chat-box");
-  const div = document.createElement("div");
-  div.className = `msg ${auteur}`;
-  div.innerHTML = texte;
-  box.appendChild(div);
-  box.scrollTop = box.scrollHeight;
-}
-
-function traiterSaisie() {
-  const input = document.getElementById("user-input");
-  const texte = input.value.trim();
-  if (texte === "") return;
-
-  ajouterMessage(texte, "user");
-  input.value = "";
-
-  // Logique de sélection du type au départ
-  if (!typeBienSelectionne) {
-    const choix = texte.toUpperCase();
-    if (parcours[choix]) {
-      typeBienSelectionne = choix;
-      setTimeout(
-        () =>
-          ajouterMessage(
-            `Analyse lancée pour : <strong>${typeBienSelectionne}</strong>.`,
-            "bot",
-          ),
-        400,
-      );
-      setTimeout(
-        () => ajouterMessage(parcours[typeBienSelectionne][0].q, "bot"),
-        1000,
-      );
-    } else {
-      ajouterMessage(
-        "Option non reconnue. Merci de choisir parmi les types listés ci-dessus.",
-        "bot",
-      );
-    }
-    return;
-  }
-
-  // Déroulement des questions
-  const questionsActuelles = parcours[typeBienSelectionne];
-  reponses[questionsActuelles[indexQuestion].cle] = texte;
-  indexQuestion++;
-
-  if (indexQuestion < questionsActuelles.length) {
-    setTimeout(
-      () => ajouterMessage(questionsActuelles[indexQuestion].q, "bot"),
-      500,
-    );
-  } else {
-    finaliserAnalyse();
-  }
-}
-
-function finaliserAnalyse() {
-  const p = parseFloat(reponses.prix) || 0;
-  const s = parseFloat(reponses.surface) || 0;
-  const ratio = s > 0 ? (p / s).toFixed(2) : 0;
-
-  const rapportHTML = `
-        <div style="background: #ffffff; border: 2px solid #2c3e50; border-radius: 8px; padding: 15px; margin-top: 10px; color: #333;">
-            <h3 style="margin: 0 0 10px 0; color: #2c3e50; border-bottom: 2px solid #3498db;">📊 FICHE SYNTHÈSE : ${typeBienSelectionne}</h3>
-            <p><strong>📍 Localisation :</strong> ${reponses.adresse}</p>
-            <p><strong>💰 Valeur d'acquisition :</strong> ${p.toLocaleString()} €</p>
-            ${s > 0 ? `<p><strong>📏 Analyse surfacique :</strong> ${s} m² (${ratio} €/m²)</p>` : ""}
-            ${reponses.dpe ? `<p><strong>⚡ Diagnostic :</strong> Classe ${reponses.dpe}</p>` : ""}
-            ${reponses.technique ? `<p><strong>🛠 État technique :</strong> ${reponses.technique}</p>` : ""}
-            <div style="background: #2c3e50; color: white; padding: 10px; border-radius: 4px; text-align: center; margin-top: 15px; font-weight: bold; font-size: 0.9em;">
-                DOSSIER REALDATA IMMO VALIDÉ
-            </div>
-        </div>
-    `;
-
-  document.getElementById("input-area").style.display = "none";
-  ajouterMessage("Analyse technique terminée. Génération du rapport...", "bot");
-  setTimeout(() => ajouterMessage(rapportHTML, "bot"), 800);
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("btn-valider").onclick = traiterSaisie;
-  document.getElementById("user-input").onkeypress = (e) => {
-    if (e.key === "Enter") traiterSaisie();
-  };
-
-  setTimeout(() => {
-    ajouterMessage(
-      "Bienvenue dans l'assistant RealData. Quel type de bien souhaitez-vous analyser ?<br><br><strong>MAISON, APPARTEMENT, IMMEUBLE, TERRAIN, COMMERCE, PARKING</strong>",
-      "bot",
-    );
-  }, 800);
-});
+    "MAISON": [
+        { q: "1. Quel est le prix Net Vendeur (€) ?", cle: "prix" },
+        { q: "2. Montant des honoraires d'agence (€) ?", cle: "honoraires" },
+        { q: "3. Surface habitable exacte (m2) ?", cle: "surface" },
+        { q: "4. Classement DPE (Énergie et Climat) ?", cle: "dpe" },
+        { q: "5. Montant de la Taxe Foncière annuelle (€) ?", cle: "taxe" },
+        { q: "6. Type de chauffage et production d'eau chaude ?", cle: "chauffage" },
+        { q: "7. État de la toiture, charpente et isolation ?", cle: "technique" },
+        { q: "8. Adresse complète (Ville, Quartier) ?", cle: "adresse" },
+        { q: "9. Assainissement (Tout-à-l'égout ou Fosse) ?", cle: "reseaux" },
+        { q: "10. Potentiel (Extension, Aménagement de combles, Piscine) ?", cle: "potentiel" }
+    ],
+    "APPARTEMENT": [
+        { q: "1. Quel est le prix Net Vendeur (€) ?", cle: "prix" },
+        { q: "2. Montant des honoraires d'agence (€) ?", cle: "honoraires" },
+        { q: "3. Surface Loi Carrez (m2) ?", cle: "surface" },
+        { q: "4. Classement DPE (A à G) ?", cle: "dpe" },
+        { q: "5. Montant de la Taxe Foncière (€) ?", cle: "taxe" },
+        { q: "6. Montant des charges de copropriété annuelles (€) ?", cle: "charges" },
+        { q: "7. Travaux récents ou votés dans l'immeuble ?", cle: "technique" },
+        { q: "8. Adresse, étage et présence d'un ascenseur ?", cle: "adresse" },
+        { q: "9. Annexes incluses (Cave, Parking, Garage, Balcon) ?", cle: "annexes" },
+        { q: "10. Destination du bien (Habitation, Professionnel, Mixte) ?", cle: "potentiel" }
+    ],
+    "IMMEUBLE": [
+        { q: "1. Prix Net Vendeur de l'immeuble (€) ?", cle: "prix" },
+        { q: "2. Honoraires de négociation (€) ?", cle: "honoraires" },
+        { q: "3. Nombre total de lots (Habitation, Commerces, Garages) ?", cle: "lots" },
+        { q: "4. État locatif actuel (Loyers annuels HC perçus) ?", cle: "loyer" },
+        { q: "5. Montant de la Taxe Foncière (€) ?", cle: "taxe" },
+        { q: "6. État des compteurs (Eau et Élec : Individuels ou Communs) ?", cle: "reseaux" },
+        { q: "7. État du Gros Œuvre (Façade, Toiture, Étanchéité) ?", cle: "technique" },
+        { q: "8. Adresse précise de l'ensemble immobilier ?", cle: "adresse" },
+        { q: "9. Mode de chauffage (Individuel ou Chaufferie collective) ?", cle: "chauffage" },
+        { q: "10. Potentiel de valorisation (Division de lots, Surélévation) ?", cle: "potentiel" }
+    ],
+    "TERRAIN": [
+        { q: "1. Quel est le prix Net Vendeur (€) ?", cle: "prix" },
+        { q: "2. Montant des honoraires d'agence (€) ?", cle: "honoraires" },
+        { q: "3. Surface cadastrale totale (m2) ?", cle: "surface" },
+        { q: "4. Zone au PLU (ex: Zone Urbaine U, à Urbaniser AU...) ?", cle: "plu" },
+        { q: "5. Taxes d'aménagement et de raccordement estimées (€) ?", cle: "taxe" },
+        { q: "6. Étude de sol G1 ou G2 disponible (Oui/Non) ?", cle: "dpe" },
+        { q: "7. Viabilisation (Eau, Élec, Télécom : Sur parcelle ou Bordure) ?", cle: "technique" },
+        { q: "8. Adresse, orientation et accès ?", cle: "adresse" },
+        { q: "9. Le terrain est-il libre de constructeur ?", cle: "reseaux" },
+        { q: "10. Emprise au sol maximum autorisée (CES) ?", cle: "potentiel" }
+    ],
+    "COMMERCE": [
+        { q: "1. Prix de vente du mur ou fonds de commerce (€) ?", cle: "prix" },
+        { q: "2. Honoraires HT ou TTC (€) ?", cle: "honoraires" },
+        { q: "3. Surface commerciale utile (m2) ?", cle: "surface" },
+        { q: "4. Type de bail en cours (3/6/9, précaire, commercial) ?", cle: "bail" },
+        { q: "5. Taxe Foncière à la charge du bailleur ou du preneur ?", cle: "taxe" },
+        { q: "6. Montant du loyer annuel HC (€) ?", cle: "loyer" },
+        { q: "7. État technique (Extraction, Normes PMR, Électricité) ?", cle: "technique" },
+        { q: "8. Adresse et visibilité (Linéaire de vitrine) ?", cle: "adresse" },
+        { q: "9. Charges de copropriété ou charges de centre commercial ?", cle: "charges" },
+        { q: "10. Droit au bail ou pas-de-porte inclus ?", cle: "potentiel" }
+    ],
+    "PARKING": [
+        { q: "1. Prix du lot de parking / box (€) ?", cle: "prix" },
+        { q: "2. Honoraires d'agence (€) ?", cle: "honoraires" },
+        { q: "3. Nombre d'emplacements vendus ?", cle: "lots" },
+        { q: "4. Loyer mensuel moyen
