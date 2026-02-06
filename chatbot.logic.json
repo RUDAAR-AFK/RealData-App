@@ -1,0 +1,56 @@
+{
+  "nom_projet": "RealData Immo",
+  "auteur": "Rudy",
+  "etapes_collecte": [
+    {
+      "id": 1,
+      "question": "Quel est le prix Net Vendeur ?",
+      "cle": "prix_net_vendeur"
+    },
+    {
+      "id": 2,
+      "question": "Et les honoraires de l'agence ?",
+      "cle": "honoraires_agence"
+    },
+    {
+      "id": 3,
+      "question": "Quelle est la surface Carrez du bien ?",
+      "cle": "surface_m2"
+    },
+    {
+      "id": 4,
+      "question": "Quelle est la note du DPE (A à G) ?",
+      "cle": "note_dpe"
+    },
+    {
+      "id": 5,
+      "question": "Quel est le montant de la Taxe Foncière ?",
+      "cle": "taxe_fonciere"
+    },
+    {
+      "id": 6,
+      "question": "Y a-t-il des charges de copropriété ? Si oui, quel montant mensuel ?",
+      "cle": "charges_copro"
+    },
+    {
+      "id": 7,
+      "question": "Quel est l'état technique global (Toiture, Élec, Plomberie) ?",
+      "cle": "etat_technique"
+    },
+    {
+      "id": 8,
+      "question": "Peux-tu me donner l'adresse précise pour la localisation ?",
+      "cle": "adresse_precise"
+    },
+    {
+      "id": 9,
+      "question": "Les compteurs (eau/élec) sont-ils individuels ou communs ?",
+      "cle": "type_compteurs"
+    },
+    {
+      "id": 10,
+      "question": "Dernier point d'Eric : vois-tu un potentiel de division ou d'extension ?",
+      "cle": "potentiel_division"
+    }
+  ]
+}
