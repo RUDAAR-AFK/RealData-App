@@ -1,55 +1,40 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>RealData Immo - Générateur</title>
+  <head>
+    <meta charset="UTF-8" />
+    <title>RealData Immo - Calculateur</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0a192f; color: #f0ebd8; padding: 20px; line-height: 1.6; }
-        .container { max-width: 800px; margin: auto; background: #112240; padding: 30px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        h1 { color: #f0ebd8; border-bottom: 2px solid #f0ebd8; padding-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
-        .section { margin-bottom: 25px; padding: 15px; border: 1px solid #233554; border-radius: 5px; }
-        label { display: block; margin-top: 15px; font-weight: bold; color: #64ffda; }
-        input { width: 100%; padding: 12px; margin-top: 5px; border-radius: 5px; border: 1px solid #233554; background: #0a192f; color: white; box-sizing: border-box; }
-        .result-box { background: #64ffda; color: #0a192f; padding: 20px; border-radius: 5px; margin-top: 20px; text-align: center; font-size: 1.5rem; font-weight: bold; }
-        .btn { width: 100%; background-color: #f0ebd8; color: #0a192f; padding: 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 20px; font-size: 1rem; }
-        .btn:hover { background-color: #64ffda; }
+      body {
+        font-family: sans-serif;
+        padding: 20px;
+        line-height: 1.6;
+      }
+      .container {
+        max-width: 600px;
+        margin: auto;
+        border: 1px solid #ccc;
+        padding: 20px;
+        border-radius: 8px;
+      }
+      .resultat {
+        font-weight: bold;
+        color: #2c3e50;
+        background: #ecf0f1;
+        padding: 10px;
+        margin-top: 20px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <h1>REALDATA IMMO</h1>
-        
-        <div class="section">
-            <label>Nom du projet</label>
-            <input type="text" id="nomProjet" placeholder="Ex: Ancienne Gendarmerie Léré">
-            
-            <label>Prix d'achat FAI (€)</label>
-            <input type="number" id="prix" placeholder="Ex: 400000" oninput="calculerRentabilite()">
-            
-            <label>Loyer mensuel total HC (€)</label>
-            <input type="number" id="loyers" placeholder="Ex: 3128" oninput="calculerRentabilite()">
-        </div>
+      <h1>RealData Immo</h1>
+      <p>Analyse de rentabilité pour vos projets fictifs.</p>
 
-        <div id="resultatRentabilite" class="result-box">
-            Rentabilité Brute : 0 %
-        </div>
-
-        <button class="btn">GÉNÉRER LE DOSSIER PDF</button>
+      <div id="affichage-test" class="resultat">
+        Le résultat du calcul s'affichera ici...
+      </div>
     </div>
 
-    <script>
-        function calculerRentabilite() {
-            const prix = document.getElementById('prix').value;
-            const loyers = document.getElementById('loyers').value;
-            const affichage = document.getElementById('resultatRentabilite');
-
-            if (prix > 0 && loyers > 0) {
-                const rentabilite = ((loyers * 12) / prix) * 100;
-                affichage.innerHTML = "Rentabilité Brute : " + rentabilite.toFixed(2) + " %";
-            } else {
-                affichage.innerHTML = "Rentabilité Brute : 0 %";
-            }
-        }
-    </script>
-</body>
+    <script src="calculateur.js"></script>
+  </body>
 </html>
