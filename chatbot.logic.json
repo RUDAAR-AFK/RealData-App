@@ -1,100 +1,42 @@
 {
   "nom_projet": "RealData Immo",
-  "auteur": "Rudy",
-  "version": "1.2",
-  "description": "Logique de collecte de données structurée par fondamentaux et archétypes",
-  "flux_de_collecte": [
-    {
-      "etape": 1,
-      "categorie": "Identification",
-      "questions": [
-        {
-          "question": "Quel est le type de bien ? (1: Immeuble, 2: Pavillon, 3: Appartement, 4: Atypique)",
-          "cle": "type_bien"
-        },
-        {
-          "question": "Quel est l'archétype prioritaire ciblé ? (1: Investisseur, 2: Primo-accédant, 3: Touriste, 4: Vendeur pressé)",
-          "cle": "archetype_cible"
-        }
-      ]
-    },
-    {
-      "etape": 2,
-      "categorie": "Fondamentaux Universels",
-      "questions": [
-        { "question": "Adresse précise du bien ?", "cle": "adresse" },
-        { "question": "Prix Net Vendeur (€) ?", "cle": "prix_net" },
-        { "question": "Note DPE (A à G) ?", "cle": "note_dpe" },
-        { "question": "Surface habitable ou Carrez (m2) ?", "cle": "surface" },
-        {
-          "question": "Montant de la taxe foncière (€) ?",
-          "cle": "taxe_fonciere"
-        },
-        { "question": "Nombre de places de stationnement ?", "cle": "parking" },
-        { "question": "État du gros œuvre (1 à 10) ?", "cle": "etat_structure" }
-      ]
-    },
-    {
-      "etape": 3,
-      "categorie": "Module Spécifique : Investisseur",
-      "condition": "archetype_cible == 1",
-      "questions": [
-        { "question": "Loyer annuel HC estimé (€) ?", "cle": "loyers_annuels" },
-        {
-          "question": "Indice de tension locative (1 à 10) ?",
-          "cle": "tension_locative"
-        },
-        {
-          "question": "Éligible au déficit foncier ou dispositif fiscal ?",
-          "cle": "fiscalite_eligible"
-        },
-        {
-          "question": "État des parties communes (1 à 10) ?",
-          "cle": "etat_parties_communes"
-        }
-      ]
-    },
-    {
-      "etape": 4,
-      "categorie": "Module Spécifique : Primo-accédant",
-      "condition": "archetype_cible == 2",
-      "questions": [
-        {
-          "question": "Proximité des écoles et commerces (1 à 10) ?",
-          "cle": "score_services"
-        },
-        {
-          "question": "Sécurité du quartier perçue (1 à 10) ?",
-          "cle": "score_securite"
-        },
-        {
-          "question": "Montant estimé des travaux immédiats (€) ?",
-          "cle": "enveloppe_travaux"
-        },
-        {
-          "question": "Conformité électricité et assainissement ?",
-          "cle": "conformite_technique"
-        }
-      ]
-    },
-    {
-      "etape": 5,
-      "categorie": "Module Spécifique : Touriste Immo / Coup de cœur",
-      "condition": "archetype_cible == 3",
-      "questions": [
-        {
-          "question": "Qualité de l'exposition et luminosité ?",
-          "cle": "score_lumiere"
-        },
-        {
-          "question": "Design cuisine et salle de bain (1 à 10) ?",
-          "cle": "score_design"
-        },
-        {
-          "question": "Présence d'atouts (Piscine, Vue, Dressing) ?",
-          "cle": "atouts_confort"
-        }
-      ]
-    }
-  ]
+  "version": "1.4",
+  "parcours": {
+    "MAISON": [
+      { "q": "1. Prix Net Vendeur (€) ?", "cle": "prix" },
+      { "q": "2. Honoraires d'agence (€) ?", "cle": "honoraires" },
+      { "q": "3. Surface habitable (m2) ?", "cle": "surface" },
+      { "q": "4. DPE (A à G) ?", "cle": "dpe" },
+      { "q": "5. Taxe Foncière (€) ?", "cle": "taxe" },
+      {
+        "q": "6. Note État Toiture/Isolation (1: À refaire, 5: Neuf) ?",
+        "cle": "note_technique"
+      },
+      {
+        "q": "7. Note Électricité/Plomberie (1: Hors normes, 5: Neuf) ?",
+        "cle": "note_reseaux"
+      },
+      { "q": "8. Adresse précise ?", "cle": "adresse" },
+      {
+        "q": "9. Type d'assainissement (Tout à l'égout / Fosse) ?",
+        "cle": "assainissement"
+      },
+      { "q": "10. Potentiel d'évolution ?", "cle": "potentiel" }
+    ],
+    "IMMEUBLE": [
+      { "q": "1. Prix Net Vendeur (€) ?", "cle": "prix" },
+      { "q": "2. Honoraires (€) ?", "cle": "honoraires" },
+      { "q": "3. Nombre de lots ?", "cle": "lots" },
+      { "q": "4. Loyers annuels HC (€) ?", "cle": "loyer" },
+      { "q": "5. Taxe Foncière (€) ?", "cle": "taxe" },
+      {
+        "q": "6. Note Gros Œuvre (1: Mauvais, 5: Excellent) ?",
+        "cle": "note_technique"
+      },
+      { "q": "7. État des compteurs ?", "cle": "note_reseaux" },
+      { "q": "8. Adresse ?", "cle": "adresse" },
+      { "q": "9. Chauffage ?", "cle": "chauffage" },
+      { "q": "10. Potentiel de division ?", "cle": "potentiel" }
+    ]
+  }
 }
