@@ -1,14 +1,39 @@
-// Fonction pour calculer la rentabilité brute
-function calculerRentabiliteBrute(prixNetVendeur, honoraires, loyerMensuel) {
+/**
+ * Calcule le rendement Net-Net d'un investissement
+ * Formule : ((Loyer Annuel - Charges) / Prix Total) * 100
+ */
+function calculerRendementNet(
+  prixNetVendeur,
+  honoraires,
+  loyerMensuel,
+  taxeFonciere,
+  charges,
+) {
   const prixTotal = prixNetVendeur + honoraires;
-  const loyerAnnuel = loyerMensuel * 12;
+  const loyerAnnuelNet = loyerMensuel * 12 - taxeFonciere - charges;
 
-  // La formule magique : (Loyer Annuel / Prix Total) * 100
-  const rendement = (loyerAnnuel / prixTotal) * 100;
+  const rendementNet = (loyerAnnuelNet / prixTotal) * 100;
 
-  return rendement.toFixed(2); // On garde 2 chiffres après la virgule
+  return rendementNet.toFixed(2);
 }
 
-// Simulation pour un de tes immeubles
-const resultat = calculerRentabiliteBrute(400000, 20000, 2500);
-console.log("Le rendement brut estimé est de : " + resultat + "%");
+// --- TEST SUR UN PROJET FICTIF : "Résidence Horizon" ---
+const projetHorizon = {
+  prix: 320000,
+  frais: 28000,
+  loyer: 2100,
+  taxe: 1800,
+  divers: 600,
+};
+
+const resultatNet = calculerRendementNet(
+  projetHorizon.prix,
+  projetHorizon.frais,
+  projetHorizon.loyer,
+  projetHorizon.taxe,
+  projetHorizon.divers,
+);
+
+console.log("--- RealData Immo : Analyse Pro ---");
+console.log("Projet : Résidence Horizon");
+console.log("Rendement Net : " + resultatNet + " %");
