@@ -1,135 +1,126 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <title>RealData Immo - Assistant Personnel</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RealData Immo - Assistant Expert</title>
     <style>
-      body {
-        font-family: "Segoe UI", sans-serif;
-        background: #f4f7f6;
-        display: flex;
-        justify-content: center;
-        padding: 20px;
-      }
-      #chat-container {
-        width: 100%;
-        max-width: 700px;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        height: 85vh;
-        display: flex;
-        flex-direction: column;
-      }
-      #chat-box {
-        flex: 1;
-        padding: 20px;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        background: #fafafa;
-      }
-      .msg {
-        padding: 12px 16px;
-        border-radius: 15px;
-        max-width: 80%;
-      }
-      .bot {
-        background: #eef2f7;
-        align-self: flex-start;
-        color: #34495e;
-        border-bottom-left-radius: 2px;
-      }
-      .user {
-        background: #2c3e50;
-        color: white;
-        align-self: flex-end;
-        border-bottom-right-radius: 2px;
-      }
-      #input-area {
-        padding: 15px;
-        border-top: 1px solid #eee;
-        display: flex;
-        gap: 10px;
-      }
-      input {
-        flex: 1;
-        padding: 12px;
-        border: 1px solid #ddd;
-        border-radius: 25px;
-        outline: none;
-      }
-      button {
-        background: #3498db;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 25px;
-        cursor: pointer;
-        font-weight: bold;
-      }
-      .report {
-        background: white;
-        border: 2px solid #2c3e50;
-        border-radius: 10px;
-        padding: 20px;
-        margin-top: 10px;
-      }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; margin: 0; }
+        #chat-container { width: 100%; max-width: 700px; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; height: 90vh; }
+        #chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; background: #f8f9fa; }
+        .msg { padding: 12px 18px; border-radius: 18px; max-width: 80%; line-height: 1.4; font-size: 15px; }
+        .bot { background: #ffffff; align-self: flex-start; color: #2c3e50; border: 1px solid #dee2e6; border-bottom-left-radius: 2px; }
+        .user { background: #2c3e50; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+        #input-area { padding: 20px; border-top: 1px solid #eee; display: flex; gap: 10px; background: white; }
+        input { flex: 1; padding: 12px 20px; border: 1px solid #ced4da; border-radius: 30px; outline: none; font-size: 15px; }
+        button { background: #3498db; color: white; border: none; padding: 10px 25px; border-radius: 30px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        #btn-reset { display: none; background: #e74c3c; color: white; border: none; padding: 12px; cursor: pointer; border-radius: 8px; margin: 10px; font-weight: bold; }
+        .report-card { background: white; border: 2px solid #2c3e50; border-radius: 12px; padding: 20px; margin-top: 10px; color: #2c3e50; text-align: left; }
     </style>
-  </head>
-  <body>
-    <div id="chat-container">
-      <div id="chat-box"></div>
-      <div id="input-area">
-        <input type="text" id="user-input" placeholder="Répondez ici..." />
+</head>
+<body>
+
+<div id="chat-container">
+    <div id="chat-box"></div>
+    <div id="input-area">
+        <input type="text" id="user-input" placeholder="Répondez ici..." autocomplete="off">
         <button id="btn-valider">Valider</button>
-      </div>
-      <button
-        id="btn-reset"
-        style="
-          display: none;
-          background: #e74c3c;
-          color: white;
-          border: none;
-          padding: 10px;
-          cursor: pointer;
-        "
-        onclick="location.reload()"
-      >
-        Nouvelle Analyse
-      </button>
     </div>
+    <button id="btn-reset" onclick="location.reload()">Nouvelle Analyse</button>
+</div>
 
-    <script src="calculator.js"></script>
-    <script>
-      // La logique de parcours sera chargée ici ou via chatbot-logic.json
-      // (Pour le test direct, on utilise l'objet parcours défini précédemment)
-      let typeBien = null,
-        index = 0,
-        reponses = {};
+<script src="calculator.js"></script>
 
-      function finaliser() {
-        const result = calculateRealDataMetrics(reponses, typeBien);
-        const rapport = `
-                <div class="report">
-                    <h3 style="color:#3498db; margin-top:0;">Fiche Expertise RealData Immo</h3>
-                    <p><strong>📍 Adresse :</strong> ${reponses.adresse}</p>
-                    <p><strong>💰 Acquisition :</strong> ${result.total} €</p>
-                    ${result.indicateurs}
-                    <p><strong>⚡ DPE :</strong> ${result.dpe}</p>
-                    <div style="background:#2c3e50; color:white; padding:15px; border-radius:8px; text-align:center; font-weight:bold; margin-top:15px;">
-                        INDICE DE SANTÉ & CONFORT : ${result.score}/10
-                    </div>
-                    <p style="font-size:12px; color:#7f8c8d; margin-top:10px;">Cet indice calcule le risque financier lié à l'énergie et aux travaux.</p>
-                </div>`;
+<script>
+const parcours = {
+    MAISON: [
+        { q: "1. Prix Net Vendeur (€) ?", cle: "prix" },
+        { q: "2. Honoraires d'agence (€) ?", cle: "honoraires" },
+        { q: "3. Surface habitable (m2) ?", cle: "surface" },
+        { q: "4. DPE (A à G) ?", cle: "dpe" },
+        { q: "5. Taxe Foncière (€) ?", cle: "taxe" },
+        { q: "6. Note État Toiture (1: À refaire, 5: Neuf) ?", cle: "note_technique" },
+        { q: "7. Note Électricité/Plomberie (1: À refaire, 5: Neuf) ?", cle: "note_reseaux" },
+        { q: "8. Adresse précise ?", cle: "adresse" },
+        { q: "9. Assainissement ?", cle: "reseaux" },
+        { q: "10. Potentiel d'extension ?", cle: "potentiel" }
+    ],
+    IMMEUBLE: [
+        { q: "1. Prix Net Vendeur (€) ?", cle: "prix" },
+        { q: "2. Honoraires (€) ?", cle: "honoraires" },
+        { q: "3. Nombre de lots ?", cle: "lots" },
+        { q: "4. Loyers annuels HC (€) ?", cle: "loyer" },
+        { q: "5. Taxe Foncière (€) ?", cle: "taxe" },
+        { q: "6. Note Gros Œuvre (1 à 5) ?", cle: "note_technique" },
+        { q: "7. État des compteurs (1 à 5) ?", cle: "note_reseaux" },
+        { q: "8. Adresse ?", cle: "adresse" },
+        { q: "9. Chauffage ?", cle: "chauffage" },
+        { q: "10. Potentiel de division ?", cle: "potentiel" }
+    ]
+};
 
-        document.getElementById("input-area").style.display = "none";
-        document.getElementById("btn-reset").style.display = "block";
-        ajouterMessage(rapport, "bot");
-      }
+let typeBien = null, index = 0, reponses = {};
 
-      // ... (ajouterMessage et traiterSaisie restent identiques)
-    </script>
-  </body>
-</html>
+function ajouterMessage(texte, auteur) {
+    const box = document.getElementById("chat-box");
+    const div = document.createElement("div");
+    div.className = `msg ${auteur}`;
+    div.innerHTML = texte;
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
+}
+
+function traiterSaisie() {
+    const input = document.getElementById("user-input");
+    const texte = input.value.trim();
+    if (texte === "") return;
+
+    ajouterMessage(texte, "user");
+    input.value = "";
+
+    if (!typeBien) {
+        const choix = texte.toUpperCase();
+        if (parcours[choix]) {
+            typeBien = choix;
+            setTimeout(() => {
+                ajouterMessage(`Analyse lancée : <strong>${typeBien}</strong>.`, "bot");
+                setTimeout(() => ajouterMessage(parcours[typeBien][0].q, "bot"), 600);
+            }, 400);
+        } else {
+            ajouterMessage("Veuillez saisir : MAISON ou IMMEUBLE.", "bot");
+        }
+    } else {
+        const qActuelles = parcours[typeBien];
+        reponses[qActuelles[index].cle] = texte;
+        index++;
+
+        if (index < qActuelles.length) {
+            setTimeout(() => ajouterMessage(qActuelles[index].q, "bot"), 500);
+        } else {
+            finaliser();
+        }
+    }
+}
+
+function finaliser() {
+    // Appel de la fonction de calcul dans calculator.js
+    const result = calculateRealDataMetrics(reponses, typeBien);
+
+    const rapport = `
+        <div class="report-card">
+            <h3 style="margin-top:0; border-bottom: 2px solid #3498db; padding-bottom: 10px;">RealData Immo : Expertise ${typeBien}</h3>
+            <p><strong>📍 Localisation :</strong> ${reponses.adresse}</p>
+            <p><strong>💰 Acquisition :</strong> ${result.total} €</p>
+            ${result.indicateurs}
+            <p><strong>⚡ DPE :</strong> ${result.dpe}</p>
+            <div style="background: #f8f9fa; border-left: 4px solid #3498db; padding: 10px; margin: 15px 0; font-size: 14px;">
+                Expertise technique : Toiture(${reponses.note_technique}/5), Réseaux(${reponses.note_reseaux}/5)
+            </div>
+            <div style="background: #2c3e50; color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: bold;">
+                INDICE DE SANTÉ & CONFORT : ${result.score}/10
+            </div>
+        </div>`;
+
+    document.getElementById("input-area").style.display = "none";
+    document.getElementById("btn-reset").style.display = "block";
+    ajouterMessage("Analyse terminée. Voici ton rapport expert :", "bot
