@@ -1,56 +1,100 @@
 {
   "nom_projet": "RealData Immo",
   "auteur": "Rudy",
-  "etapes_collecte": [
+  "version": "1.2",
+  "description": "Logique de collecte de données structurée par fondamentaux et archétypes",
+  "flux_de_collecte": [
     {
-      "id": 1,
-      "question": "Quel est le prix Net Vendeur ?",
-      "cle": "prix_net_vendeur"
+      "etape": 1,
+      "categorie": "Identification",
+      "questions": [
+        {
+          "question": "Quel est le type de bien ? (1: Immeuble, 2: Pavillon, 3: Appartement, 4: Atypique)",
+          "cle": "type_bien"
+        },
+        {
+          "question": "Quel est l'archétype prioritaire ciblé ? (1: Investisseur, 2: Primo-accédant, 3: Touriste, 4: Vendeur pressé)",
+          "cle": "archetype_cible"
+        }
+      ]
     },
     {
-      "id": 2,
-      "question": "Et les honoraires de l'agence ?",
-      "cle": "honoraires_agence"
+      "etape": 2,
+      "categorie": "Fondamentaux Universels",
+      "questions": [
+        { "question": "Adresse précise du bien ?", "cle": "adresse" },
+        { "question": "Prix Net Vendeur (€) ?", "cle": "prix_net" },
+        { "question": "Note DPE (A à G) ?", "cle": "note_dpe" },
+        { "question": "Surface habitable ou Carrez (m2) ?", "cle": "surface" },
+        {
+          "question": "Montant de la taxe foncière (€) ?",
+          "cle": "taxe_fonciere"
+        },
+        { "question": "Nombre de places de stationnement ?", "cle": "parking" },
+        { "question": "État du gros œuvre (1 à 10) ?", "cle": "etat_structure" }
+      ]
     },
     {
-      "id": 3,
-      "question": "Quelle est la surface Carrez du bien ?",
-      "cle": "surface_m2"
+      "etape": 3,
+      "categorie": "Module Spécifique : Investisseur",
+      "condition": "archetype_cible == 1",
+      "questions": [
+        { "question": "Loyer annuel HC estimé (€) ?", "cle": "loyers_annuels" },
+        {
+          "question": "Indice de tension locative (1 à 10) ?",
+          "cle": "tension_locative"
+        },
+        {
+          "question": "Éligible au déficit foncier ou dispositif fiscal ?",
+          "cle": "fiscalite_eligible"
+        },
+        {
+          "question": "État des parties communes (1 à 10) ?",
+          "cle": "etat_parties_communes"
+        }
+      ]
     },
     {
-      "id": 4,
-      "question": "Quelle est la note du DPE (A à G) ?",
-      "cle": "note_dpe"
+      "etape": 4,
+      "categorie": "Module Spécifique : Primo-accédant",
+      "condition": "archetype_cible == 2",
+      "questions": [
+        {
+          "question": "Proximité des écoles et commerces (1 à 10) ?",
+          "cle": "score_services"
+        },
+        {
+          "question": "Sécurité du quartier perçue (1 à 10) ?",
+          "cle": "score_securite"
+        },
+        {
+          "question": "Montant estimé des travaux immédiats (€) ?",
+          "cle": "enveloppe_travaux"
+        },
+        {
+          "question": "Conformité électricité et assainissement ?",
+          "cle": "conformite_technique"
+        }
+      ]
     },
     {
-      "id": 5,
-      "question": "Quel est le montant de la Taxe Foncière ?",
-      "cle": "taxe_fonciere"
-    },
-    {
-      "id": 6,
-      "question": "Y a-t-il des charges de copropriété ? Si oui, quel montant mensuel ?",
-      "cle": "charges_copro"
-    },
-    {
-      "id": 7,
-      "question": "Quel est l'état technique global (Toiture, Élec, Plomberie) ?",
-      "cle": "etat_technique"
-    },
-    {
-      "id": 8,
-      "question": "Peux-tu me donner l'adresse précise pour la localisation ?",
-      "cle": "adresse_precise"
-    },
-    {
-      "id": 9,
-      "question": "Les compteurs (eau/élec) sont-ils individuels ou communs ?",
-      "cle": "type_compteurs"
-    },
-    {
-      "id": 10,
-      "question": "Dernier point d'Eric : vois-tu un potentiel de division ou d'extension ?",
-      "cle": "potentiel_division"
+      "etape": 5,
+      "categorie": "Module Spécifique : Touriste Immo / Coup de cœur",
+      "condition": "archetype_cible == 3",
+      "questions": [
+        {
+          "question": "Qualité de l'exposition et luminosité ?",
+          "cle": "score_lumiere"
+        },
+        {
+          "question": "Design cuisine et salle de bain (1 à 10) ?",
+          "cle": "score_design"
+        },
+        {
+          "question": "Présence d'atouts (Piscine, Vue, Dressing) ?",
+          "cle": "atouts_confort"
+        }
+      ]
     }
   ]
 }
