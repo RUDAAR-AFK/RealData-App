@@ -1,79 +1,19 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RealData Immo - Assistant Expert</title>
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; margin: 0; }
-        #chat-container { width: 100%; max-width: 750px; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; height: 92vh; }
-        #chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; background: #f8f9fa; }
-        .msg { padding: 12px 18px; border-radius: 18px; max-width: 80%; line-height: 1.4; font-size: 15px; }
-        .bot { background: #ffffff; align-self: flex-start; color: #2c3e50; border: 1px solid #dee2e6; border-bottom-left-radius: 2px; }
-        .user { background: #2c3e50; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
-        #input-area { padding: 20px; border-top: 1px solid #eee; display: flex; gap: 10px; background: white; }
-        input { flex: 1; padding: 12px 20px; border: 1px solid #ced4da; border-radius: 30px; outline: none; font-size: 15px; }
-        button { background: #3498db; color: white; border: none; padding: 10px 25px; border-radius: 30px; cursor: pointer; font-weight: bold; }
-        #btn-reset { display: none; background: #e74c3c; color: white; border: none; padding: 12px; cursor: pointer; border-radius: 8px; margin: 10px; font-weight: bold; }
-        .report-card { background: white; border: 2px solid #2c3e50; border-radius: 12px; padding: 20px; margin-top: 10px; color: #2c3e50; text-align: left; }
-    </style>
-</head>
-<body>
-
-<div id="chat-container">
-    <div id="chat-box"></div>
-    <div id="input-area">
-        <input type="text" id="user-input" placeholder="Répondez ici..." autocomplete="off">
+  <head>
+    <meta charset="UTF-8" />
+    <title>RealData Immo - Expert</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="chat-container">
+      <div id="chat-box"></div>
+      <div id="input-area">
+        <input type="text" id="user-input" placeholder="Répondez ici..." />
         <button id="btn-valider">Valider</button>
+      </div>
+      <button id="btn-reset" onclick="location.reload()">Reset</button>
     </div>
-    <button id="btn-reset" onclick="location.reload()">Nouvelle Analyse</button>
-</div>
-
-<script>
-// --- 1. LES 6 PARCOURS COMPLETS ---
-const parcours = {
-    MAISON: [
-        { q: "1. Prix Net Vendeur (€) ?", cle: "prix" },
-        { q: "2. Honoraires d'agence (€) ?", cle: "honoraires" },
-        { q: "3. Surface habitable (m²) ?", cle: "surface" },
-        { q: "4. DPE (A à G) ?", cle: "dpe" },
-        { q: "5. Taxe Foncière (€) ?", cle: "taxe" },
-        { q: "6. Note État Toiture (1: À refaire, 5: Neuf) ?", cle: "n_tech" },
-        { q: "7. Note Électricité/Chauffage (1: À refaire, 5: Neuf) ?", cle: "n_res" },
-        { q: "8. Adresse précise ?", cle: "adresse" },
-        { q: "9. Assainissement (Fosse ou Tout-à-l'égout) ?", cle: "reseaux" },
-        { q: "10. Potentiel d'extension ?", cle: "potentiel" }
-    ],
-    APPARTEMENT: [
-        { q: "1. Prix Net Vendeur (€) ?", cle: "prix" },
-        { q: "2. Honoraires d'agence (€) ?", cle: "honoraires" },
-        { q: "3. Surface Loi Carrez (m²) ?", cle: "surface" },
-        { q: "4. DPE (A à G) ?", cle: "dpe" },
-        { q: "5. Taxe Foncière (€) ?", cle: "taxe" },
-        { q: "6. Charges annuelles copro (€) ?", cle: "charges" },
-        { q: "7. Note Parties Communes (1 à 5) ?", cle: "n_tech" },
-        { q: "8. Adresse et étage ?", cle: "adresse" },
-        { q: "9. Cave ou Parking inclus ?", cle: "reseaux" },
-        { q: "10. Travaux de copro votés ?", cle: "potentiel" }
-    ],
-    IMMEUBLE: [
-        { q: "1. Prix Net Vendeur (€) ?", cle: "prix" },
-        { q: "2. Honoraires (€) ?", cle: "honoraires" },
-        { q: "3. Nombre de lots ?", cle: "lots" },
-        { q: "4. Loyers annuels HC (€) ?", cle: "loyer" },
-        { q: "5. Taxe Foncière (€) ?", cle: "taxe" },
-        { q: "6. Note Gros Œuvre (1 à 5) ?", cle: "n_tech" },
-        { q: "7. Note État des Compteurs (1 à 5) ?", cle: "n_res" },
-        { q: "8. Adresse ?", cle: "adresse" },
-        { q: "9. Chauffage (Indiv/Coll) ?", cle: "reseaux" },
-        { q: "10. Potentiel de division ?", cle: "potentiel" }
-    ],
-    TERRAIN: [
-        { q: "1. Prix Net Vendeur (€) ?", cle: "prix" },
-        { q: "2. Honoraires (€) ?", cle: "honoraires" },
-        { q: "3. Surface cadastrale (m²) ?", cle: "surface" },
-        { q: "4. Zone au PLU ?", cle: "reseaux" },
-        { q: "5. Taxes d'aménagement estimées (€) ?", cle: "taxe" },
-        { q: "6. Note Accessibilité/Pente (1 à 5) ?", cle: "n_tech" },
-        { q: "7. Étude G1/G2 faite (Oui/Non) ?", cle: "n_res" },
-        { q: "8. Adresse ?",
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
