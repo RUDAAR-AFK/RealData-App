@@ -1,23 +1,24 @@
-/**
- * Fonction déclenchée par le bouton du site
- * Utilise la formule du rendement brut pour ce test
- */
 function calculerMaintenant() {
-  // 1. Récupération des chiffres tapés par l'utilisateur
-  const prix = parseFloat(document.getElementById("prix").value);
-  const loyer = parseFloat(document.getElementById("loyer").value);
+  // 1. On récupère les éléments
+  const prixInput = document.getElementById("prix");
+  const loyerInput = document.getElementById("loyer");
   const zone = document.getElementById("resultat-zone");
 
-  // 2. La formule magique
-  const rendementBrut = ((loyer * 12) / prix) * 100;
+  // 2. On transforme le texte en nombres
+  const prix = parseFloat(prixInput.value);
+  const loyer = parseFloat(loyerInput.value);
 
-  // 3. Affichage visuel
+  // 3. Calcul du rendement brut
+  const rendement = ((loyer * 12) / prix) * 100;
+
+  // 4. Affichage du résultat avec style
   zone.style.display = "block";
-  zone.style.backgroundColor = "#e8f6f3";
-  zone.style.color = "#16a085";
-  zone.innerHTML = "RENDEMENT BRUT : " + rendementBrut.toFixed(2) + " %";
+  zone.style.backgroundColor = "#f1fdf7";
+  zone.innerHTML = `
+        <div style="font-size: 0.9em; color: #27ae60;">RÉSULTAT DE L'ANALYSE</div>
+        <div style="font-size: 1.8em; color: #1e8449;">${rendement.toFixed(2)} %</div>
+        <div style="font-size: 0.8em; color: #7f8c8d; margin-top: 5px;">Rendement Brut Fictif</div>
+    `;
 
-  console.log(
-    "Calcul exécuté pour RealData Immo : " + rendementBrut.toFixed(2) + "%",
-  );
+  console.log("Calcul RealData effectué avec succès !");
 }
