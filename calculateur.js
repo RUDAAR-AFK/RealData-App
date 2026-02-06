@@ -1,20 +1,57 @@
-// La liste des 10 points d'Eric pour l'analyse d'un projet fictif
+/**
+ * Configuration des étapes de collecte de données
+ */
 const questions = [
-  { id: 1, q: "Quel est le prix Net Vendeur (€) ?", cle: "prix" },
-  { id: 2, q: "Montant des honoraires d'agence (€) ?", cle: "honoraires" },
-  { id: 3, q: "Surface Carrez du bien (m2) ?", cle: "surface" },
-  { id: 4, q: "Note du DPE (A à G) ?", cle: "dpe" },
-  { id: 5, q: "Montant de la Taxe Foncière (€/an) ?", cle: "taxe" },
-  { id: 6, q: "Charges de copropriété mensuelles (€) ?", cle: "charges" },
-  { id: 7, q: "État technique (Toiture, Élec...) ?", cle: "etat" },
-  { id: 8, q: "Adresse précise du projet ?", cle: "adresse" },
-  { id: 9, q: "Type de compteurs (Indiv/Communs) ?", cle: "compteurs" },
-  { id: 10, q: "Potentiel de division ou extension ?", cle: "potentiel" },
+  {
+    id: 1,
+    q: "Quel est le prix Net Vendeur de l'acquisition (€) ?",
+    cle: "prix",
+  },
+  {
+    id: 2,
+    q: "Quel est le montant des honoraires d'agence (€) ?",
+    cle: "honoraires",
+  },
+  { id: 3, q: "Quelle est la surface Carrez totale (m2) ?", cle: "surface" },
+  { id: 4, q: "Quelle est la classification DPE du bien ?", cle: "dpe" },
+  {
+    id: 5,
+    q: "Quel est le montant annuel de la Taxe Foncière (€) ?",
+    cle: "taxe",
+  },
+  {
+    id: 6,
+    q: "Montant moyen des charges de copropriété mensuelles (€) ?",
+    cle: "charges",
+  },
+  {
+    id: 7,
+    q: "Observations sur l'état technique (Toiture, Électricité, Plomberie) ?",
+    cle: "etat",
+  },
+  {
+    id: 8,
+    q: "Veuillez renseigner l'adresse précise du bien :",
+    cle: "adresse",
+  },
+  {
+    id: 9,
+    q: "S'agit-il de compteurs individuels ou communs ?",
+    cle: "compteurs",
+  },
+  {
+    id: 10,
+    q: "Existe-t-il un potentiel de division ou d'extension ?",
+    cle: "potentiel",
+  },
 ];
 
 let etapeActuelle = 0;
 let donneesRecoltees = {};
 
+/**
+ * Interface de discussion
+ */
 function ajouterMessage(texte, type) {
   const chatBox = document.getElementById("chat-box");
   const div = document.createElement("div");
@@ -30,47 +67,56 @@ function envoyerReponse() {
 
   if (reponse === "") return;
 
-  // 1. On affiche la réponse de l'utilisateur
   ajouterMessage(reponse, "user");
-
-  // 2. On enregistre la donnée
   donneesRecoltees[questions[etapeActuelle].cle] = reponse;
   input.value = "";
-
-  // 3. On passe à la question suivante
   etapeActuelle++;
 
   if (etapeActuelle < questions.length) {
     setTimeout(() => {
       ajouterMessage(questions[etapeActuelle].q, "bot");
-    }, 500);
+    }, 600);
   } else {
-    afficherResultatFinal();
+    genererRapportFinal();
   }
 }
 
-function afficherResultatFinal() {
-  const p = parseFloat(donneesRecoltees.prix);
-  const h = parseFloat(donneesRecoltees.honoraires);
-  const t = parseFloat(donneesRecoltees.taxe);
-  const c = parseFloat(donneesRecoltees.charges) * 12; // On annualise les charges
+/**
+ * Calcul et affichage du rapport
+ */
+function genererRapportFinal() {
+  const p = parseFloat(donneesRecoltees.prix) || 0;
+  const h = parseFloat(donneesRecoltees.honoraires) || 0;
+  const t = parseFloat(donneesRecoltees.taxe) || 0;
+  const c = (parseFloat(donneesRecoltees.charges) || 0) * 12;
+  const s = parseFloat(donneesRecoltees.surface) || 0;
 
-  const prixTotal = p + h;
-  // On simule un loyer fictif basé sur 10€/m2 pour l'exemple
-  const loyerFictif = (parseFloat(donneesRecoltees.surface) || 0) * 10;
-  const rendementNet = ((loyerFictif * 12 - t - c) / prixTotal) * 100;
+  const investissementTotal = p + h;
+  // Estimation prudente basée sur un loyer fictif de 11€/m2
+  const loyerEstimeAnnuel = s * 11 * 12;
+  const rendementNet =
+    ((loyerEstimeAnnuel - t - c) / investissementTotal) * 100;
 
   setTimeout(() => {
-    ajouterMessage("--- ANALYSE TERMINÉE ---", "bot");
+    ajouterMessage("--- SYNTHÈSE DE L'ANALYSE ---", "bot");
+    ajouterMessage(`Localisation : ${donneesRecoltees.adresse}`, "bot");
     ajouterMessage(
-      `Pour ce projet fictif à ${donneesRecoltees.adresse}, le rendement net estimé (base 10€/m2) est de ${rendementNet.toFixed(2)} %.`,
+      `Investissement global : ${investissementTotal.toLocaleString()} €`,
+      "bot",
+    );
+    ajouterMessage(
+      `Rendement Net Estimé : ${rendementNet.toFixed(2)} % (sur base locative théorique).`,
+      "bot",
+    );
+    ajouterMessage(
+      "Dossier enregistré. Vous pouvez fermer cette fenêtre ou rafraîchir pour une nouvelle saisie.",
       "bot",
     );
     document.getElementById("input-area").classList.add("hidden");
   }, 1000);
 }
 
-// Lancement automatique de la première question
+// Initialisation
 window.onload = () => {
   setTimeout(() => {
     ajouterMessage(questions[0].q, "bot");
