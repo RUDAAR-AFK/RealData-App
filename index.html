@@ -2,37 +2,80 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>RealData Immo - Calculateur</title>
+    <title>RealData Immo - Lab</title>
     <style>
       body {
         font-family: sans-serif;
         padding: 20px;
-        line-height: 1.6;
+        background-color: #f4f7f6;
       }
-      .container {
-        max-width: 600px;
+      .card {
+        max-width: 450px;
         margin: auto;
-        border: 1px solid #ccc;
-        padding: 20px;
-        border-radius: 8px;
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       }
-      .resultat {
-        font-weight: bold;
+      h1 {
         color: #2c3e50;
-        background: #ecf0f1;
+        font-size: 1.5em;
+        text-align: center;
+      }
+      label {
+        display: block;
+        margin-top: 15px;
+        font-weight: bold;
+        color: #34495e;
+      }
+      input {
+        width: 100%;
         padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        box-sizing: border-box;
+      }
+      button {
+        width: 100%;
+        background: #3498db;
+        color: white;
+        border: none;
+        padding: 12px;
         margin-top: 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 1em;
+      }
+      button:hover {
+        background: #2980b9;
+      }
+      #resultat-zone {
+        margin-top: 25px;
+        padding: 15px;
+        border-radius: 6px;
+        text-align: center;
+        font-weight: bold;
+        display: none;
       }
     </style>
   </head>
   <body>
-    <div class="container">
+    <div class="card">
       <h1>RealData Immo</h1>
-      <p>Analyse de rentabilité pour vos projets fictifs.</p>
+      <p style="text-align: center; font-size: 0.9em; color: #7f8c8d">
+        Simulateur de rendement (Données fictives)
+      </p>
 
-      <div id="affichage-test" class="resultat">
-        Le résultat du calcul s'affichera ici...
-      </div>
+      <label>Prix Net Vendeur (€)</label>
+      <input type="number" id="prix" value="200000" />
+
+      <label>Loyer mensuel HC (€)</label>
+      <input type="number" id="loyer" value="1100" />
+
+      <button onclick="calculerMaintenant()">Lancer le calcul</button>
+
+      <div id="resultat-zone"></div>
     </div>
 
     <script src="calculateur.js"></script>
