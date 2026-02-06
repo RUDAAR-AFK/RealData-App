@@ -5,7 +5,7 @@
     <title>RealData Immo - Expert</title>
     <style>
       body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        font-family: "Segoe UI", sans-serif;
         background-color: #f0f2f5;
         display: flex;
         justify-content: center;
@@ -82,28 +82,29 @@
         cursor: pointer;
         font-weight: bold;
       }
-      .hidden {
+      #btn-reset {
+        background: #e74c3c;
         display: none;
+        margin: 10px;
       }
     </style>
   </head>
   <body>
     <div class="chat-container">
-      <div class="chat-header">REALDATA IMMO : ASSISTANT D'ANALYSE</div>
-      <div id="chat-box">
-        <div class="msg bot">
-          Système prêt. Analyse technique et financière en cours.
-        </div>
-      </div>
+      <div class="chat-header">RealData Immo : ASSISTANT D'ANALYSE</div>
+      <div id="chat-box"></div>
       <div class="chat-input" id="input-area">
         <input
           type="text"
           id="user-input"
-          placeholder="Saisissez votre réponse ici..."
+          placeholder="Choisissez le type de bien..."
           autocomplete="off"
         />
         <button id="btn-valider">Valider</button>
       </div>
+      <button id="btn-reset" onclick="location.reload()">
+        Nouvelle Analyse
+      </button>
     </div>
     <script src="calculateur.js"></script>
   </body>
