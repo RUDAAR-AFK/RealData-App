@@ -1,27 +1,52 @@
-// Définition des parcours de questions
+/**
+ * Configuration des parcours de collecte par type de bien
+ */
 const parcours = {
-  IMMEUBLE: [
-    { q: "Prix Net Vendeur de l'immeuble (€) ?", cle: "prix" },
-    { q: "Nombre total de lots ?", cle: "lots" },
-    { q: "Surface totale (m2) ?", cle: "surface" },
-    { q: "État de la toiture et gros œuvre ?", cle: "technique" },
-    { q: "Taxe Foncière (€) ?", cle: "taxe" },
-    { q: "Adresse de l'immeuble ?", cle: "adresse" },
+  MAISON: [
+    { q: "Prix Net Vendeur (€) ?", cle: "prix" },
+    { q: "Surface habitable (m2) ?", cle: "surface" },
+    { q: "Surface de la parcelle / terrain (m2) ?", cle: "terrain" },
+    { q: "État général (Travaux à prévoir ?) ?", cle: "technique" },
+    { q: "DPE (Classe énergétique) ?", cle: "dpe" },
+    { q: "Adresse du bien ?", cle: "adresse" },
   ],
   APPARTEMENT: [
     { q: "Prix Net Vendeur (€) ?", cle: "prix" },
-    { q: "Étage et présence d'un ascenseur ?", cle: "etage" },
     { q: "Surface Carrez (m2) ?", cle: "surface" },
-    { q: "Montant des charges de copro mensuelles (€) ?", cle: "charges" },
-    { q: "DPE (A à G) ?", cle: "dpe" },
+    { q: "Étage et ascenseur ?", cle: "etage" },
+    { q: "Montant des charges de copropriété annuelles (€) ?", cle: "charges" },
+    { q: "DPE (Classe énergétique) ?", cle: "dpe" },
     { q: "Adresse du bien ?", cle: "adresse" },
   ],
-  BOX: [
-    { q: "Prix du lot de boxs (€) ?", cle: "prix" },
-    { q: "Nombre de boxs ?", cle: "lots" },
-    { q: "Sécurisation (Portail, Caméras) ?", cle: "technique" },
-    { q: "Taxe Foncière (€) ?", cle: "taxe" },
-    { q: "Adresse des boxs ?", cle: "adresse" },
+  IMMEUBLE: [
+    { q: "Prix Net Vendeur de l'ensemble (€) ?", cle: "prix" },
+    { q: "Nombre total de lots ?", cle: "lots" },
+    { q: "Surface totale (m2) ?", cle: "surface" },
+    { q: "État de la toiture et des communs ?", cle: "technique" },
+    { q: "Montant de la Taxe Foncière (€) ?", cle: "taxe" },
+    { q: "Adresse de l'immeuble ?", cle: "adresse" },
+  ],
+  TERRAIN: [
+    { q: "Prix Net Vendeur (€) ?", cle: "prix" },
+    { q: "Surface du terrain (m2) ?", cle: "surface" },
+    { q: "Le terrain est-il viabilisé (Oui/Non) ?", cle: "technique" },
+    { q: "Zone au PLU (ex: U, AU, N...) ?", cle: "plu" },
+    { q: "Adresse du terrain ?", cle: "adresse" },
+  ],
+  COMMERCE: [
+    { q: "Prix Net Vendeur (€) ?", cle: "prix" },
+    { q: "Loyer annuel HC encaissé (€) ?", cle: "loyer" },
+    { q: "Surface commerciale (m2) ?", cle: "surface" },
+    { q: "Type de bail (3/6/9, précaire...) ?", cle: "bail" },
+    { q: "Taxe foncière à la charge du preneur ?", cle: "taxe" },
+    { q: "Adresse du local ?", cle: "adresse" },
+  ],
+  PARKING: [
+    { q: "Prix du lot de parkings/boxs (€) ?", cle: "prix" },
+    { q: "Nombre d'emplacements ?", cle: "lots" },
+    { q: "Le site est-il sécurisé (Portail, Caméra) ?", cle: "technique" },
+    { q: "Charges de copro annuelles (€) ?", cle: "charges" },
+    { q: "Adresse précise ?", cle: "adresse" },
   ],
 };
 
@@ -33,8 +58,7 @@ function ajouterMessage(texte, auteur) {
   const box = document.getElementById("chat-box");
   const div = document.createElement("div");
   div.className = `msg ${auteur}`;
-  div.innerHTML = texte.includes("<") ? texte : texte;
-  if (!texte.includes("<")) div.innerText = texte;
+  div.innerHTML = texte;
   box.appendChild(div);
   box.scrollTop = box.scrollHeight;
 }
@@ -47,7 +71,7 @@ function traiterSaisie() {
   ajouterMessage(texte, "user");
   input.value = "";
 
-  // ÉTAPE 1 : Sélection du type de bien
+  // Logique de sélection du type au départ
   if (!typeBienSelectionne) {
     const choix = texte.toUpperCase();
     if (parcours[choix]) {
@@ -55,7 +79,7 @@ function traiterSaisie() {
       setTimeout(
         () =>
           ajouterMessage(
-            `Parfait. Début de l'analyse : ${typeBienSelectionne}.`,
+            `Analyse lancée pour : <strong>${typeBienSelectionne}</strong>.`,
             "bot",
           ),
         400,
@@ -66,14 +90,14 @@ function traiterSaisie() {
       );
     } else {
       ajouterMessage(
-        "Merci de choisir entre : IMMEUBLE, APPARTEMENT ou BOX.",
+        "Option non reconnue. Merci de choisir parmi les types listés ci-dessus.",
         "bot",
       );
     }
     return;
   }
 
-  // ÉTAPE 2 : Déroulement des questions spécifiques
+  // Déroulement des questions
   const questionsActuelles = parcours[typeBienSelectionne];
   reponses[questionsActuelles[indexQuestion].cle] = texte;
   indexQuestion++;
@@ -90,24 +114,26 @@ function traiterSaisie() {
 
 function finaliserAnalyse() {
   const p = parseFloat(reponses.prix) || 0;
-  const s = parseFloat(reponses.surface) || 1; // Évite division par zero
+  const s = parseFloat(reponses.surface) || 0;
+  const ratio = s > 0 ? (p / s).toFixed(2) : 0;
 
   const rapportHTML = `
-        <div style="background: #ffffff; border: 2px solid #2c3e50; border-radius: 8px; padding: 15px; margin-top: 10px; color: #333; text-align: left;">
-            <h3 style="margin: 0 0 10px 0; color: #2c3e50;">📊 RAPPORT ${typeBienSelectionne}</h3>
-            <p><strong>📍 Adresse :</strong> ${reponses.adresse}</p>
-            <p><strong>💰 Prix :</strong> ${p.toLocaleString()} €</p>
-            ${reponses.surface ? `<p><strong>📏 Ratio :</strong> ${(p / s).toFixed(2)} €/m²</p>` : ""}
-            <p><strong>🛠 État/Infos :</strong> ${reponses.technique || "N/A"}</p>
-            <div style="background: #27ae60; color: white; padding: 8px; border-radius: 4px; text-align: center; margin-top: 10px; font-weight: bold;">
-                ANALYSE TERMINÉE
+        <div style="background: #ffffff; border: 2px solid #2c3e50; border-radius: 8px; padding: 15px; margin-top: 10px; color: #333;">
+            <h3 style="margin: 0 0 10px 0; color: #2c3e50; border-bottom: 2px solid #3498db;">📊 FICHE SYNTHÈSE : ${typeBienSelectionne}</h3>
+            <p><strong>📍 Localisation :</strong> ${reponses.adresse}</p>
+            <p><strong>💰 Valeur d'acquisition :</strong> ${p.toLocaleString()} €</p>
+            ${s > 0 ? `<p><strong>📏 Analyse surfacique :</strong> ${s} m² (${ratio} €/m²)</p>` : ""}
+            ${reponses.dpe ? `<p><strong>⚡ Diagnostic :</strong> Classe ${reponses.dpe}</p>` : ""}
+            ${reponses.technique ? `<p><strong>🛠 État technique :</strong> ${reponses.technique}</p>` : ""}
+            <div style="background: #2c3e50; color: white; padding: 10px; border-radius: 4px; text-align: center; margin-top: 15px; font-weight: bold; font-size: 0.9em;">
+                DOSSIER REALDATA IMMO VALIDÉ
             </div>
         </div>
     `;
 
   document.getElementById("input-area").style.display = "none";
-  ajouterMessage("Synthèse générée avec succès.", "bot");
-  setTimeout(() => ajouterMessage(rapportHTML, "bot"), 600);
+  ajouterMessage("Analyse technique terminée. Génération du rapport...", "bot");
+  setTimeout(() => ajouterMessage(rapportHTML, "bot"), 800);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -118,7 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   setTimeout(() => {
     ajouterMessage(
-      "Quel type de bien souhaitez-vous analyser ? (Tapez : IMMEUBLE, APPARTEMENT ou BOX)",
+      "Bienvenue dans l'assistant RealData. Quel type de bien souhaitez-vous analyser ?<br><br><strong>MAISON, APPARTEMENT, IMMEUBLE, TERRAIN, COMMERCE, PARKING</strong>",
       "bot",
     );
   }, 800);
