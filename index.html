@@ -1,111 +1,150 @@
-<!doctype html>
-<html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <title>RealData Immo - Expert</title>
-    <style>
-      body {
-        font-family: "Segoe UI", sans-serif;
-        background-color: #f0f2f5;
-        display: flex;
-        justify-content: center;
-        padding: 20px;
-        margin: 0;
-      }
-      .chat-container {
-        width: 100%;
-        max-width: 500px;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        display: flex;
-        flex-direction: column;
-        height: 90vh;
-        overflow: hidden;
-      }
-      .chat-header {
-        background: #34495e;
-        color: white;
-        padding: 20px;
-        text-align: center;
-        font-weight: bold;
-        font-size: 1.1em;
-      }
-      #chat-box {
-        flex: 1;
-        padding: 20px;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        background: #ffffff;
-      }
-      .msg {
-        padding: 12px 16px;
-        border-radius: 12px;
-        max-width: 80%;
-        font-size: 0.95em;
-        line-height: 1.4;
-      }
-      .bot {
-        background: #f1f3f5;
-        color: #2c3e50;
-        align-self: flex-start;
-        border-bottom-left-radius: 2px;
-      }
-      .user {
-        background: #2980b9;
-        color: white;
-        align-self: flex-end;
-        border-bottom-right-radius: 2px;
-      }
-      .chat-input {
-        display: flex;
-        padding: 20px;
-        border-top: 1px solid #eee;
-        gap: 10px;
-        background: #fafafa;
-      }
-      input {
-        flex: 1;
-        padding: 12px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        outline: none;
-      }
-      button {
-        background: #2c3e50;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: bold;
-      }
-      #btn-reset {
-        background: #e74c3c;
-        display: none;
-        margin: 10px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="chat-container">
-      <div class="chat-header">RealData Immo : ASSISTANT D'ANALYSE</div>
-      <div id="chat-box"></div>
-      <div class="chat-input" id="input-area">
-        <input
-          type="text"
-          id="user-input"
-          placeholder="Choisissez le type de bien..."
-          autocomplete="off"
-        />
-        <button id="btn-valider">Valider</button>
-      </div>
-      <button id="btn-reset" onclick="location.reload()">
-        Nouvelle Analyse
-      </button>
+const parcours = { MAISON: [ { q: "1. Prix Net Vendeur (€) ?", cle: "prix" }, {
+q: "2. Honoraires d'agence (€) ?", cle: "honoraires" }, { q: "3. Surface
+habitable (m2) ?", cle: "surface" }, { q: "4. DPE (A à G) ?", cle: "dpe" }, { q:
+"5. Taxe Foncière (€) ?", cle: "taxe" }, { q: "6. Mode de chauffage ?", cle:
+"chauffage" }, { q: "7. État Toiture/Isolation ?", cle: "technique" }, { q: "8.
+Adresse précise ?", cle: "adresse" }, { q: "9. Assainissement ?", cle: "reseaux"
+}, { q: "10. Potentiel d'extension ?", cle: "potentiel" }, ], APPARTEMENT: [ {
+q: "1. Prix Net Vendeur (€) ?", cle: "prix" }, { q: "2. Honoraires d'agence (€)
+?", cle: "honoraires" }, { q: "3. Surface Loi Carrez (m2) ?", cle: "surface" },
+{ q: "4. DPE (A à G) ?", cle: "dpe" }, { q: "5. Taxe Foncière (€) ?", cle:
+"taxe" }, { q: "6. Charges annuelles (€) ?", cle: "charges" }, { q: "7. État des
+parties communes ?", cle: "technique" }, { q: "8. Adresse et étage ?", cle:
+"adresse" }, { q: "9. Cave / Parking ?", cle: "annexes" }, { q: "10. Travaux de
+copro votés ?", cle: "potentiel" }, ], IMMEUBLE: [ { q: "1. Prix Net Vendeur (€)
+?", cle: "prix" }, { q: "2. Honoraires (€) ?", cle: "honoraires" }, { q: "3.
+Nombre de lots ?", cle: "lots" }, { q: "4. Loyers annuels HC (€) ?", cle:
+"loyer" }, { q: "5. Taxe Foncière (€) ?", cle: "taxe" }, { q: "6. État des
+compteurs ?", cle: "reseaux" }, { q: "7. État du Gros Œuvre ?", cle: "technique"
+}, { q: "8. Adresse ?", cle: "adresse" }, { q: "9. Chauffage (Indiv/Coll) ?",
+cle: "chauffage" }, { q: "10. Potentiel de division ?", cle: "potentiel" }, ],
+TERRAIN: [ { q: "1. Prix Net Vendeur (€) ?", cle: "prix" }, { q: "2. Honoraires
+(€) ?", cle: "honoraires" }, { q: "3. Surface cadastrale (m2) ?", cle: "surface"
+}, { q: "4. Zone au PLU ?", cle: "plu" }, { q: "5. Taxes d'aménagement (€) ?",
+cle: "taxe" }, { q: "6. Étude G1/G2 faite ?", cle: "dpe" }, { q: "7.
+Viabilisation ?", cle: "technique" }, { q: "8. Adresse ?", cle: "adresse" }, {
+q: "9. Libre de constructeur ?", cle: "reseaux" }, { q: "10. Emprise au sol
+(CES) ?", cle: "potentiel" }, ], COMMERCE: [ { q: "1. Prix (€) ?", cle: "prix"
+}, { q: "2. Honoraires (€) ?", cle: "honoraires" }, { q: "3. Surface commerciale
+(m2) ?", cle: "surface" }, { q: "4. Type de bail ?", cle: "bail" }, { q: "5.
+Taxe Foncière ?", cle: "taxe" }, { q: "6. Loyer annuel (€) ?", cle: "loyer" }, {
+q: "7. État technique ?", cle: "technique" }, { q: "8. Adresse ?", cle:
+"adresse" }, { q: "9. Charges copro ?", cle: "charges" }, { q: "10. Droit au
+bail ?", cle: "potentiel" }, ], PARKING: [ { q: "1. Prix (€) ?", cle: "prix" },
+{ q: "2. Honoraires (€) ?", cle: "honoraires" }, { q: "3. Nombre de places ?",
+cle: "lots" }, { q: "4. Loyer mensuel moyen (€) ?", cle: "loyer" }, { q: "5.
+Taxe Foncière (€) ?", cle: "taxe" }, { q: "6. Charges annuelles (€) ?", cle:
+"charges" }, { q: "7. Sécurisation ?", cle: "technique" }, { q: "8. Adresse ?",
+cle: "adresse" }, { q: "9. Dimensions ?", cle: "surface" }, { q: "10. Bornes
+électriques ?", cle: "potentiel" }, ], }; let typeBien = null, index = 0,
+reponses = {}; function ajouterMessage(texte, auteur) { const box =
+document.getElementById("chat-box"); const div = document.createElement("div");
+div.className = `msg ${auteur}`; div.innerHTML = texte; box.appendChild(div);
+box.scrollTop = box.scrollHeight; } function traiterSaisie() { const input =
+document.getElementById("user-input"); const texte = input.value.trim(); if
+(texte === "") return; ajouterMessage(texte, "user"); input.value = ""; if
+(!typeBien) { const choix = texte.toUpperCase(); if (parcours[choix]) { typeBien
+= choix; setTimeout(() => { ajouterMessage(`Analyse technique lancée :
+<strong>${typeBien}</strong>.`, "bot"); setTimeout(() =>
+ajouterMessage(parcours[typeBien][0].q, "bot"), 600); }, 400); } else {
+ajouterMessage("Veuillez saisir : MAISON, APPARTEMENT, IMMEUBLE, TERRAIN,
+COMMERCE ou PARKING.", "bot"); } } else { const qActuelles = parcours[typeBien];
+reponses[qActuelles[index].cle] = texte; index++; if (index < qActuelles.length)
+{ setTimeout(() => ajouterMessage(qActuelles[index].q, "bot"), 500); } else {
+finaliser(); } } } function finaliser() { const p = parseFloat(reponses.prix) ||
+0; const h = parseFloat(reponses.honoraires) || 0; const totalAcquisition = p +
+h; const surface = parseFloat(reponses.surface) || 0; const loyer =
+parseFloat(reponses.loyer) || 0; const taxe = parseFloat(reponses.taxe) || 0;
+const dpe = reponses.dpe ? reponses.dpe.toUpperCase() : "N/A"; let
+indicateursHtml = ""; let scoreLiquidite = 6; if (surface > 0) { const prixM2 =
+(p / surface).toFixed(2); indicateursHtml += `
+<p><strong>📊 Valeur :</strong> ${prixM2} €/m²</p>
+`; } if (["A", "B"].includes(dpe)) scoreLiquidite += 2; if (["F",
+"G"].includes(dpe)) scoreLiquidite -= 3; if (loyer > 0) { const loyerAnnuel =
+(typeBien === "PARKING") ? loyer * 12 : loyer; const rendementBrut =
+((loyerAnnuel / totalAcquisition) * 100).toFixed(2); const rendementNet =
+(((loyerAnnuel - taxe) / totalAcquisition) * 100).toFixed(2); indicateursHtml +=
+`
+<p style="color: #27ae60">
+  <strong>📈 Rendement Brut :</strong> ${rendementBrut}%
+</p>
+<p style="color: #2ecc71">
+  <strong>💰 Rendement Net :</strong> ${rendementNet}%
+</p>
+`; if (parseFloat(rendementBrut) > 8) scoreLiquidite += 1; } const rapport = `
+<div
+  style="
+    background: #ffffff;
+    border: 2px solid #2c3e50;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 15px;
+    text-align: left;
+    color: #2c3e50;
+  "
+>
+  <h3
+    style="
+      margin-top: 0;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 10px;
+    "
+  >
+    RealData Immo : Expertise ${typeBien}
+  </h3>
+  <div
+    style="
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-top: 10px;
+    "
+  >
+    <div>
+      <p><strong>📍 Localisation :</strong><br />${reponses.adresse}</p>
+      <p>
+        <strong>💰 Acquisition :</strong
+        ><br />${totalAcquisition.toLocaleString()} €
+      </p>
     </div>
-    <script src="calculateur.js"></script>
-  </body>
-</html>
+    <div>
+      ${indicateursHtml}
+      <p><strong>⚡ DPE :</strong> ${dpe}</p>
+    </div>
+  </div>
+  <div
+    style="
+      background: #f8f9fa;
+      border-left: 4px solid #3498db;
+      padding: 10px;
+      margin-top: 15px;
+      font-style: italic;
+    "
+  >
+    Note technique : ${reponses.technique}
+  </div>
+  <div
+    style="
+      margin-top: 20px;
+      background: #2c3e50;
+      color: white;
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: bold;
+    "
+  >
+    SCORE DE LIQUIDITÉ : ${Math.max(0, Math.min(10, scoreLiquidite))}/10
+  </div>
+</div>
+`; document.getElementById("input-area").style.display = "none";
+document.getElementById("btn-reset").style.display = "block";
+ajouterMessage("Analyse technique terminée. Voici ton rapport RealData Immo :",
+"bot"); setTimeout(() => ajouterMessage(rapport, "bot"), 800); }
+document.addEventListener("DOMContentLoaded", () => {
+document.getElementById("btn-valider").onclick = traiterSaisie;
+document.getElementById("user-input").onkeypress = (e) => { if (e.key ===
+"Enter") traiterSaisie(); }; setTimeout(() => { ajouterMessage("Bienvenue dans
+l'assistant <strong>RealData Immo</strong>. Choisissez la catégorie :
+<strong>MAISON, APPARTEMENT, IMMEUBLE, TERRAIN, COMMERCE, PARKING</strong>",
+"bot"); }, 600); });
