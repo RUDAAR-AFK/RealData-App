@@ -2,90 +2,104 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>RealData Immo - V2</title>
+    <title>RealData Immo - Chatbot Assistant</title>
     <style>
       body {
         font-family: "Segoe UI", sans-serif;
-        padding: 20px;
         background-color: #f0f2f5;
+        display: flex;
+        justify-content: center;
+        padding: 20px;
       }
-      .card {
-        max-width: 450px;
-        margin: 40px auto;
+      .chat-container {
+        width: 100%;
+        max-width: 500px;
         background: white;
-        padding: 30px;
         border-radius: 15px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        height: 80vh;
+        overflow: hidden;
       }
-      h1 {
-        color: #2980b9;
+      .chat-header {
+        background: #3498db;
+        color: white;
+        padding: 15px;
         text-align: center;
-        margin-bottom: 5px;
+        font-weight: bold;
       }
-      p.subtitle {
-        text-align: center;
-        color: #7f8c8d;
-        font-size: 0.9em;
-        margin-bottom: 25px;
+      #chat-box {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        background: #f9f9f9;
       }
-      label {
-        display: block;
-        margin-top: 15px;
-        font-weight: 600;
-        color: #34495e;
+      .msg {
+        padding: 10px 15px;
+        border-radius: 18px;
+        max-width: 80%;
+        font-size: 0.95em;
+      }
+      .bot {
+        background: #e1e1e1;
+        align-self: flex-start;
+        border-bottom-left-radius: 2px;
+      }
+      .user {
+        background: #3498db;
+        color: white;
+        align-self: flex-end;
+        border-bottom-right-radius: 2px;
+      }
+      .chat-input {
+        display: flex;
+        padding: 15px;
+        border-top: 1px solid #eee;
+        gap: 10px;
       }
       input {
-        width: 100%;
-        padding: 12px;
-        margin-top: 8px;
-        border: 2px solid #dfe6e9;
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ddd;
         border-radius: 8px;
-        box-sizing: border-box;
-        transition: 0.3s;
-      }
-      input:focus {
-        border-color: #3498db;
         outline: none;
       }
       button {
-        width: 100%;
         background: #3498db;
         color: white;
         border: none;
-        padding: 15px;
-        margin-top: 25px;
+        padding: 10px 20px;
         border-radius: 8px;
         cursor: pointer;
         font-weight: bold;
-        font-size: 1.1em;
       }
-      button:hover {
-        background: #2980b9;
-      }
-      #resultat-zone {
-        margin-top: 25px;
-        padding: 20px;
-        border-radius: 8px;
-        text-align: center;
+      .hidden {
         display: none;
-        border: 2px solid #27ae60;
       }
     </style>
   </head>
   <body>
-    <div class="card">
-      <h1>RealData Immo</h1>
-      <p class="subtitle">Calculateur Interactif (Mode Lab)</p>
-
-      <label>Prix d'Achat Fictif (€)</label>
-      <input type="number" id="prix" value="250000" />
-
-      <label>Loyer Mensuel (€)</label>
-      <input type="number" id="loyer" value="1500" />
-
-      <button onclick="calculerMaintenant()">Lancer l'Analyse</button>
-
-      <div id="resultat-zone"></div>
+    <div class="chat-container">
+      <div class="chat-header">RealData Immo - Assistant Pro</div>
+      <div id="chat-box">
+        <div class="msg bot">
+          Salut Rudy ! Prêt pour une nouvelle analyse ? On commence par le
+          premier point d'Eric.
+        </div>
+      </div>
+      <div class="chat-input" id="input-area">
+        <input
+          type="text"
+          id="user-input"
+          placeholder="Tapez votre réponse ici..."
+          onkeypress="if (event.keyCode == 13) envoyerReponse();"
+        />
+        <button onclick="envoyerReponse()">Envoyer</button>
+      </div>
     </div>
     <script src="calculateur.js"></script>
   </body>
