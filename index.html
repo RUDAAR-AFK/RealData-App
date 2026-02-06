@@ -1,126 +1,260 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RealData Immo - Assistant Expert</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; margin: 0; }
-        #chat-container { width: 100%; max-width: 700px; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; height: 90vh; }
-        #chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; background: #f8f9fa; }
-        .msg { padding: 12px 18px; border-radius: 18px; max-width: 80%; line-height: 1.4; font-size: 15px; }
-        .bot { background: #ffffff; align-self: flex-start; color: #2c3e50; border: 1px solid #dee2e6; border-bottom-left-radius: 2px; }
-        .user { background: #2c3e50; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
-        #input-area { padding: 20px; border-top: 1px solid #eee; display: flex; gap: 10px; background: white; }
-        input { flex: 1; padding: 12px 20px; border: 1px solid #ced4da; border-radius: 30px; outline: none; font-size: 15px; }
-        button { background: #3498db; color: white; border: none; padding: 10px 25px; border-radius: 30px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        #btn-reset { display: none; background: #e74c3c; color: white; border: none; padding: 12px; cursor: pointer; border-radius: 8px; margin: 10px; font-weight: bold; }
-        .report-card { background: white; border: 2px solid #2c3e50; border-radius: 12px; padding: 20px; margin-top: 10px; color: #2c3e50; text-align: left; }
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background: #f0f2f5;
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+        margin: 0;
+      }
+      #chat-container {
+        width: 100%;
+        max-width: 700px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        height: 90vh;
+      }
+      #chat-box {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        background: #f8f9fa;
+      }
+      .msg {
+        padding: 12px 18px;
+        border-radius: 18px;
+        max-width: 80%;
+        line-height: 1.4;
+        font-size: 15px;
+      }
+      .bot {
+        background: #ffffff;
+        align-self: flex-start;
+        color: #2c3e50;
+        border: 1px solid #dee2e6;
+        border-bottom-left-radius: 2px;
+      }
+      .user {
+        background: #2c3e50;
+        color: white;
+        align-self: flex-end;
+        border-bottom-right-radius: 2px;
+      }
+      #input-area {
+        padding: 20px;
+        border-top: 1px solid #eee;
+        display: flex;
+        gap: 10px;
+        background: white;
+      }
+      input {
+        flex: 1;
+        padding: 12px 20px;
+        border: 1px solid #ced4da;
+        border-radius: 30px;
+        outline: none;
+        font-size: 15px;
+      }
+      button {
+        background: #3498db;
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 30px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+      #btn-reset {
+        display: none;
+        background: #e74c3c;
+        color: white;
+        border: none;
+        padding: 12px;
+        cursor: pointer;
+        border-radius: 8px;
+        margin: 10px;
+        font-weight: bold;
+      }
     </style>
-</head>
-<body>
-
-<div id="chat-container">
-    <div id="chat-box"></div>
-    <div id="input-area">
-        <input type="text" id="user-input" placeholder="Répondez ici..." autocomplete="off">
+  </head>
+  <body>
+    <div id="chat-container">
+      <div id="chat-box"></div>
+      <div id="input-area">
+        <input
+          type="text"
+          id="user-input"
+          placeholder="Répondez ici..."
+          autocomplete="off"
+        />
         <button id="btn-valider">Valider</button>
+      </div>
+      <button id="btn-reset" onclick="location.reload()">
+        Nouvelle Analyse
+      </button>
     </div>
-    <button id="btn-reset" onclick="location.reload()">Nouvelle Analyse</button>
-</div>
 
-<script src="calculator.js"></script>
+    <script>
+      // --- 1. LES PARCOURS ---
+      const parcours = {
+        MAISON: [
+          { q: "1. Prix Net Vendeur (€) ?", cle: "prix" },
+          { q: "2. Honoraires d'agence (€) ?", cle: "honoraires" },
+          { q: "3. Surface habitable (m2) ?", cle: "surface" },
+          { q: "4. DPE (A à G) ?", cle: "dpe" },
+          { q: "5. Taxe Foncière (€) ?", cle: "taxe" },
+          {
+            q: "6. Note État Toiture (1: À refaire, 5: Neuf) ?",
+            cle: "note_technique",
+          },
+          {
+            q: "7. Note Électricité/Plomberie (1: À refaire, 5: Neuf) ?",
+            cle: "note_reseaux",
+          },
+          { q: "8. Adresse précise ?", cle: "adresse" },
+          { q: "9. Assainissement ?", cle: "assainissement" },
+          { q: "10. Potentiel d'extension ?", cle: "potentiel" },
+        ],
+        IMMEUBLE: [
+          { q: "1. Prix Net Vendeur (€) ?", cle: "prix" },
+          { q: "2. Honoraires (€) ?", cle: "honoraires" },
+          { q: "3. Nombre de lots ?", cle: "lots" },
+          { q: "4. Loyers annuels HC (€) ?", cle: "loyer" },
+          { q: "5. Taxe Foncière (€) ?", cle: "taxe" },
+          { q: "6. Note Gros Œuvre (1 à 5) ?", cle: "note_technique" },
+          { q: "7. État des compteurs (1 à 5) ?", cle: "note_reseaux" },
+          { q: "8. Adresse ?", cle: "adresse" },
+          { q: "9. Chauffage ?", cle: "chauffage" },
+          { q: "10. Potentiel de division ?", cle: "potentiel" },
+        ],
+      };
 
-<script>
-const parcours = {
-    MAISON: [
-        { q: "1. Prix Net Vendeur (€) ?", cle: "prix" },
-        { q: "2. Honoraires d'agence (€) ?", cle: "honoraires" },
-        { q: "3. Surface habitable (m2) ?", cle: "surface" },
-        { q: "4. DPE (A à G) ?", cle: "dpe" },
-        { q: "5. Taxe Foncière (€) ?", cle: "taxe" },
-        { q: "6. Note État Toiture (1: À refaire, 5: Neuf) ?", cle: "note_technique" },
-        { q: "7. Note Électricité/Plomberie (1: À refaire, 5: Neuf) ?", cle: "note_reseaux" },
-        { q: "8. Adresse précise ?", cle: "adresse" },
-        { q: "9. Assainissement ?", cle: "reseaux" },
-        { q: "10. Potentiel d'extension ?", cle: "potentiel" }
-    ],
-    IMMEUBLE: [
-        { q: "1. Prix Net Vendeur (€) ?", cle: "prix" },
-        { q: "2. Honoraires (€) ?", cle: "honoraires" },
-        { q: "3. Nombre de lots ?", cle: "lots" },
-        { q: "4. Loyers annuels HC (€) ?", cle: "loyer" },
-        { q: "5. Taxe Foncière (€) ?", cle: "taxe" },
-        { q: "6. Note Gros Œuvre (1 à 5) ?", cle: "note_technique" },
-        { q: "7. État des compteurs (1 à 5) ?", cle: "note_reseaux" },
-        { q: "8. Adresse ?", cle: "adresse" },
-        { q: "9. Chauffage ?", cle: "chauffage" },
-        { q: "10. Potentiel de division ?", cle: "potentiel" }
-    ]
-};
+      let typeBien = null,
+        index = 0,
+        reponses = {};
 
-let typeBien = null, index = 0, reponses = {};
+      // --- 2. LE MOTEUR DE CHAT ---
+      function ajouterMessage(texte, auteur) {
+        const box = document.getElementById("chat-box");
+        const div = document.createElement("div");
+        div.className = `msg ${auteur}`;
+        div.innerHTML = texte;
+        box.appendChild(div);
+        box.scrollTop = box.scrollHeight;
+      }
 
-function ajouterMessage(texte, auteur) {
-    const box = document.getElementById("chat-box");
-    const div = document.createElement("div");
-    div.className = `msg ${auteur}`;
-    div.innerHTML = texte;
-    box.appendChild(div);
-    box.scrollTop = box.scrollHeight;
-}
+      function traiterSaisie() {
+        const input = document.getElementById("user-input");
+        const texte = input.value.trim();
+        if (texte === "") return;
 
-function traiterSaisie() {
-    const input = document.getElementById("user-input");
-    const texte = input.value.trim();
-    if (texte === "") return;
+        ajouterMessage(texte, "user");
+        input.value = "";
 
-    ajouterMessage(texte, "user");
-    input.value = "";
-
-    if (!typeBien) {
-        const choix = texte.toUpperCase();
-        if (parcours[choix]) {
+        if (!typeBien) {
+          const choix = texte.toUpperCase();
+          if (parcours[choix]) {
             typeBien = choix;
             setTimeout(() => {
-                ajouterMessage(`Analyse lancée : <strong>${typeBien}</strong>.`, "bot");
-                setTimeout(() => ajouterMessage(parcours[typeBien][0].q, "bot"), 600);
+              ajouterMessage(
+                `Analyse lancée : <strong>${typeBien}</strong>.`,
+                "bot",
+              );
+              setTimeout(
+                () => ajouterMessage(parcours[typeBien][0].q, "bot"),
+                600,
+              );
             }, 400);
-        } else {
+          } else {
             ajouterMessage("Veuillez saisir : MAISON ou IMMEUBLE.", "bot");
-        }
-    } else {
-        const qActuelles = parcours[typeBien];
-        reponses[qActuelles[index].cle] = texte;
-        index++;
-
-        if (index < qActuelles.length) {
-            setTimeout(() => ajouterMessage(qActuelles[index].q, "bot"), 500);
+          }
         } else {
+          const qActuelles = parcours[typeBien];
+          reponses[qActuelles[index].cle] = texte;
+          index++;
+
+          if (index < qActuelles.length) {
+            setTimeout(() => ajouterMessage(qActuelles[index].q, "bot"), 500);
+          } else {
             finaliser();
+          }
         }
-    }
-}
+      }
 
-function finaliser() {
-    // Appel de la fonction de calcul dans calculator.js
-    const result = calculateRealDataMetrics(reponses, typeBien);
+      // --- 3. LE CERVEAU DE CALCUL (Directement intégré) ---
+      function finaliser() {
+        const p = parseFloat(reponses.prix) || 0;
+        const h = parseFloat(reponses.honoraires) || 0;
+        const total = p + h;
+        const surface = parseFloat(reponses.surface) || 0;
+        const loyer = parseFloat(reponses.loyer) || 0;
+        const taxe = parseFloat(reponses.taxe) || 0;
+        const dpe = reponses.dpe ? reponses.dpe.toUpperCase() : "N/A";
 
-    const rapport = `
-        <div class="report-card">
+        const nTech = parseInt(reponses.note_technique) || 3;
+        const nRes = parseInt(reponses.note_reseaux) || 3;
+
+        let statsHtml = "";
+        let scoreSante = 5;
+
+        if (surface > 0)
+          statsHtml += `<p><strong>📊 Valeur :</strong> ${(p / surface).toFixed(2)} €/m²</p>`;
+
+        if (loyer > 0) {
+          const rendementBrut = ((loyer / total) * 100).toFixed(2);
+          const rendementNet = (((loyer - taxe) / total) * 100).toFixed(2);
+          statsHtml += `<p style="color:#27ae60;"><strong>📈 Rendement Brut :</strong> ${rendementBrut}%</p>`;
+          statsHtml += `<p style="color:#2ecc71;"><strong>💰 Rendement Net :</strong> ${rendementNet}%</p>`;
+        }
+
+        // Calcul du score (DPE + Technique)
+        if (["A", "B"].includes(dpe)) scoreSante += 2;
+        if (["F", "G"].includes(dpe)) scoreSante -= 3;
+        scoreSante += nTech - 3 + (nRes - 3) * 0.5;
+
+        const rapport = `
+        <div style="background: white; border: 2px solid #2c3e50; border-radius: 12px; padding: 20px; color: #2c3e50; text-align: left;">
             <h3 style="margin-top:0; border-bottom: 2px solid #3498db; padding-bottom: 10px;">RealData Immo : Expertise ${typeBien}</h3>
             <p><strong>📍 Localisation :</strong> ${reponses.adresse}</p>
-            <p><strong>💰 Acquisition :</strong> ${result.total} €</p>
-            ${result.indicateurs}
-            <p><strong>⚡ DPE :</strong> ${result.dpe}</p>
-            <div style="background: #f8f9fa; border-left: 4px solid #3498db; padding: 10px; margin: 15px 0; font-size: 14px;">
-                Expertise technique : Toiture(${reponses.note_technique}/5), Réseaux(${reponses.note_reseaux}/5)
-            </div>
-            <div style="background: #2c3e50; color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: bold;">
-                INDICE DE SANTÉ & CONFORT : ${result.score}/10
+            <p><strong>💰 Acquisition :</strong> ${total.toLocaleString()} €</p>
+            ${statsHtml}
+            <p><strong>⚡ DPE :</strong> ${dpe}</p>
+            <div style="background: #2c3e50; color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: bold; margin-top:15px;">
+                INDICE DE SANTÉ & CONFORT : ${Math.max(0, Math.min(10, scoreSante.toFixed(1)))}/10
             </div>
         </div>`;
 
-    document.getElementById("input-area").style.display = "none";
-    document.getElementById("btn-reset").style.display = "block";
-    ajouterMessage("Analyse terminée. Voici ton rapport expert :", "bot
+        document.getElementById("input-area").style.display = "none";
+        document.getElementById("btn-reset").style.display = "block";
+        ajouterMessage("Analyse terminée. Voici ton rapport expert :", "bot");
+        setTimeout(() => ajouterMessage(rapport, "bot"), 800);
+      }
+
+      // --- 4. DÉMARRAGE ---
+      document.getElementById("btn-valider").onclick = traiterSaisie;
+      document.getElementById("user-input").onkeypress = (e) => {
+        if (e.key === "Enter") traiterSaisie();
+      };
+
+      window.onload = () => {
+        ajouterMessage(
+          "Bienvenue dans <strong>RealData Immo</strong>.<br><br>Tapez <strong>MAISON</strong> ou <strong>IMMEUBLE</strong> pour commencer.",
+          "bot",
+        );
+      };
+    </script>
+  </body>
+</html>
