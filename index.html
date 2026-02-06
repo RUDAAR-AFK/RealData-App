@@ -5,17 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RealData Immo - Assistant Expert</title>
     <style>
-        body { font-family: sans-serif; background: #f4f7f6; display: flex; justify-content: center; padding: 20px; color: #333; }
-        #chat-container { width: 100%; max-width: 700px; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; display: flex; flex-direction: column; height: 85vh; }
-        #chat-box { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #fcfcfc; }
-        .msg { padding: 12px 16px; border-radius: 15px; max-width: 85%; line-height: 1.5; font-size: 15px; }
-        .bot { background: #f0f4f8; align-self: flex-start; color: #2c3e50; border-bottom-left-radius: 2px; border: 1px solid #d1d9e0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; margin: 0; }
+        #chat-container { width: 100%; max-width: 700px; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; height: 90vh; }
+        #chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; background: #f8f9fa; }
+        .msg { padding: 12px 18px; border-radius: 18px; max-width: 80%; line-height: 1.4; font-size: 15px; position: relative; }
+        .bot { background: #ffffff; align-self: flex-start; color: #2c3e50; border: 1px solid #dee2e6; border-bottom-left-radius: 2px; }
         .user { background: #2c3e50; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
         #input-area { padding: 20px; border-top: 1px solid #eee; display: flex; gap: 10px; background: white; }
-        input { flex: 1; padding: 12px 20px; border: 1px solid #ddd; border-radius: 30px; outline: none; font-size: 15px; }
-        button { background: #3498db; color: white; border: none; padding: 10px 25px; border-radius: 30px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        input { flex: 1; padding: 12px 20px; border: 1px solid #ced4da; border-radius: 30px; outline: none; font-size: 15px; }
+        button { background: #3498db; color: white; border: none; padding: 10px 25px; border-radius: 30px; cursor: pointer; font-weight: bold; transition: 0.3s; }
         button:hover { background: #2980b9; }
-        #btn-reset { display: none; background: #e74c3c; margin: 15px; align-self: center; }
+        #btn-reset { display: none; background: #e74c3c; margin: 10px; align-self: center; }
+        .rapport-card { background: white; border: 2px solid #2c3e50; border-radius: 12px; padding: 20px; margin-top: 10px; color: #2c3e50; }
     </style>
 </head>
 <body>
@@ -23,24 +24,37 @@
 <div id="chat-container">
     <div id="chat-box"></div>
     <div id="input-area">
-        <input type="text" id="user-input" placeholder="Répondez ici...">
+        <input type="text" id="user-input" placeholder="Répondez ici..." autocomplete="off">
         <button id="btn-valider">Valider</button>
     </div>
-    <button id="btn-reset" onclick="location.reload()">Réinitialiser l'Analyse</button>
+    <button id="btn-reset" onclick="location.reload()">Nouvelle Analyse</button>
 </div>
 
 <script>
-// --- CONFIGURATION DES PARCOURS ---
 const parcours = {
     MAISON: [
         { q: "1. Prix Net Vendeur (€) ?", cle: "prix" },
         { q: "2. Honoraires d'agence (€) ?", cle: "honoraires" },
-        { q: "3. Surface habitable (m²) ?", cle: "surface" },
+        { q: "3. Surface habitable (m2) ?", cle: "surface" },
         { q: "4. DPE (A à G) ?", cle: "dpe" },
         { q: "5. Taxe Foncière (€) ?", cle: "taxe" },
-        { q: "6. État technique (Toiture/Isolation) ?", cle: "technique" },
-        { q: "7. Adresse précise ?", cle: "adresse" },
-        { q: "8. Potentiel identifié ?", cle: "potentiel" }
+        { q: "6. Mode de chauffage ?", cle: "chauffage" },
+        { q: "7. État Toiture/Isolation ?", cle: "technique" },
+        { q: "8. Adresse précise ?", cle: "adresse" },
+        { q: "9. Assainissement ?", cle: "reseaux" },
+        { q: "10. Potentiel d'extension ?", cle: "potentiel" }
+    ],
+    APPARTEMENT: [
+        { q: "1. Prix Net Vendeur (€) ?", cle: "prix" },
+        { q: "2. Honoraires (€) ?", cle: "honoraires" },
+        { q: "3. Surface Loi Carrez (m2) ?", cle: "surface" },
+        { q: "4. DPE (A à G) ?", cle: "dpe" },
+        { q: "5. Taxe Foncière (€) ?", cle: "taxe" },
+        { q: "6. Charges annuelles (€) ?", cle: "charges" },
+        { q: "7. État des parties communes ?", cle: "technique" },
+        { q: "8. Adresse et étage ?", cle: "adresse" },
+        { q: "9. Cave / Parking ?", cle: "annexes" },
+        { q: "10. Travaux de copro votés ?", cle: "potentiel" }
     ],
     IMMEUBLE: [
         { q: "1. Prix Net Vendeur (€) ?", cle: "prix" },
@@ -48,16 +62,52 @@ const parcours = {
         { q: "3. Nombre de lots ?", cle: "lots" },
         { q: "4. Loyers annuels HC (€) ?", cle: "loyer" },
         { q: "5. Taxe Foncière (€) ?", cle: "taxe" },
-        { q: "6. État du Gros Œuvre ?", cle: "technique" },
-        { q: "7. Adresse ?", cle: "adresse" },
-        { q: "8. Potentiel de division ?", cle: "potentiel" }
+        { q: "6. État des compteurs ?", cle: "reseaux" },
+        { q: "7. État du Gros Œuvre ?", cle: "technique" },
+        { q: "8. Adresse ?", cle: "adresse" },
+        { q: "9. Chauffage ?", cle: "chauffage" },
+        { q: "10. Potentiel de division ?", cle: "potentiel" }
+    ],
+    TERRAIN: [
+        { q: "1. Prix Net Vendeur (€) ?", cle: "prix" },
+        { q: "2. Honoraires (€) ?", cle: "honoraires" },
+        { q: "3. Surface cadastrale (m2) ?", cle: "surface" },
+        { q: "4. Zone au PLU ?", cle: "plu" },
+        { q: "5. Taxes d'aménagement ?", cle: "taxe" },
+        { q: "6. Étude G1/G2 faite ?", cle: "dpe" },
+        { q: "7. Viabilisation ?", cle: "technique" },
+        { q: "8. Adresse ?", cle: "adresse" },
+        { q: "9. Libre de constructeur ?", cle: "reseaux" },
+        { q: "10. Emprise au sol ?", cle: "potentiel" }
+    ],
+    COMMERCE: [
+        { q: "1. Prix (€) ?", cle: "prix" },
+        { q: "2. Honoraires (€) ?", cle: "honoraires" },
+        { q: "3. Surface (m2) ?", cle: "surface" },
+        { q: "4. Type de bail ?", cle: "bail" },
+        { q: "5. Taxe Foncière ?", cle: "taxe" },
+        { q: "6. Loyer annuel (€) ?", cle: "loyer" },
+        { q: "7. État technique ?", cle: "technique" },
+        { q: "8. Adresse ?", cle: "adresse" },
+        { q: "9. Charges ?", cle: "charges" },
+        { q: "10. Droit au bail ?", cle: "potentiel" }
+    ],
+    PARKING: [
+        { q: "1. Prix (€) ?", cle: "prix" },
+        { q: "2. Honoraires (€) ?", cle: "honoraires" },
+        { q: "3. Nombre de places ?", cle: "lots" },
+        { q: "4. Loyer mensuel moyen (€) ?", cle: "loyer" },
+        { q: "5. Taxe Foncière (€) ?", cle: "taxe" },
+        { q: "6. Charges annuelles (€) ?", cle: "charges" },
+        { q: "7. Sécurisation ?", cle: "technique" },
+        { q: "8. Adresse ?", cle: "adresse" },
+        { q: "9. Dimensions ?", cle: "surface" },
+        { q: "10. Bornes électriques ?", cle: "potentiel" }
     ]
-    // Note : Tu peux rajouter TERRAIN, PARKING, etc. ici plus tard.
 };
 
 let typeBien = null, index = 0, reponses = {};
 
-// --- FONCTIONS DE L'INTERFACE ---
 function ajouterMessage(texte, auteur) {
     const box = document.getElementById("chat-box");
     const div = document.createElement("div");
@@ -80,45 +130,85 @@ function traiterSaisie() {
         if (parcours[choix]) {
             typeBien = choix;
             setTimeout(() => {
-                ajouterMessage(`Analyse lancée pour : <strong>${typeBien}</strong>.`, "bot");
-                setTimeout(() => ajouterMessage(parcours[typeBien][0].q, "bot"), 500);
-            }, 300);
+                ajouterMessage(`Analyse technique lancée : <strong>${typeBien}</strong>.`, "bot");
+                setTimeout(() => ajouterMessage(parcours[typeBien][0].q, "bot"), 600);
+            }, 400);
         } else {
-            ajouterMessage("Veuillez choisir entre : MAISON ou IMMEUBLE.", "bot");
+            ajouterMessage("Veuillez saisir : MAISON, APPARTEMENT, IMMEUBLE, TERRAIN, COMMERCE ou PARKING.", "bot");
         }
     } else {
-        const questions = parcours[typeBien];
-        reponses[questions[index].cle] = texte;
+        const qActuelles = parcours[typeBien];
+        reponses[qActuelles[index].cle] = texte;
         index++;
 
-        if (index < questions.length) {
-            setTimeout(() => ajouterMessage(questions[index].q, "bot"), 400);
+        if (index < qActuelles.length) {
+            setTimeout(() => ajouterMessage(qActuelles[index].q, "bot"), 500);
         } else {
             finaliser();
         }
     }
 }
 
-// --- MOTEUR DE CALCUL EXPERT ---
 function finaliser() {
     const p = parseFloat(reponses.prix) || 0;
     const h = parseFloat(reponses.honoraires) || 0;
-    const total = p + h;
+    const totalAcquisition = p + h;
+    const surface = parseFloat(reponses.surface) || 0;
     const loyer = parseFloat(reponses.loyer) || 0;
     const taxe = parseFloat(reponses.taxe) || 0;
     const dpe = reponses.dpe ? reponses.dpe.toUpperCase() : "N/A";
 
-    let indicateurs = "";
-    let score = 6;
+    let indicateursHtml = "";
+    let scoreLiquidite = 6;
 
-    // Calcul Rendement (si applicable)
-    if (loyer > 0) {
-        const rBrut = ((loyer / total) * 100).toFixed(2);
-        const rNet = (((loyer - taxe) / total) * 100).toFixed(2);
-        indicateurs += `<p style="color:#27ae60;"><strong>📈 Rendement Brut :</strong> ${rBrut}%</p>`;
-        indicateurs += `<p style="color:#2ecc71;"><strong>💰 Rendement Net :</strong> ${rNet}%</p>`;
-        if (parseFloat(rBrut) > 8) score += 1;
+    // Calcul Prix au m2
+    if (surface > 0) {
+        const prixM2 = (p / surface).toFixed(2);
+        indicateursHtml += `<p><strong>📊 Valeur :</strong> ${prixM2} €/m²</p>`;
     }
 
-    // Impact DPE
-    if (["A", "B"].includes(dpe)) score += 2;
+    // Calcul Rendement
+    if (loyer > 0) {
+        const loyerAnnuel = (typeBien === "PARKING") ? loyer * 12 : loyer;
+        const rendementBrut = ((loyerAnnuel / totalAcquisition) * 100).toFixed(2);
+        const rendementNet = (((loyerAnnuel - taxe) / totalAcquisition) * 100).toFixed(2);
+        indicateursHtml += `
+            <p style="color:#27ae60;"><strong>📈 Rendement Brut :</strong> ${rendementBrut}%</p>
+            <p style="color:#2ecc71;"><strong>💰 Rendement Net :</strong> ${rendementNet}%</p>`;
+        if (parseFloat(rendementBrut) > 8) scoreLiquidite += 1;
+    }
+
+    // Scoring DPE
+    if (["A", "B"].includes(dpe)) scoreLiquidite += 2;
+    if (["F", "G"].includes(dpe)) scoreLiquidite -= 3;
+
+    const rapport = `
+        <div class="rapport-card">
+            <h3 style="margin-top:0; border-bottom: 2px solid #3498db; padding-bottom: 10px;">RealData Immo : Expertise ${typeBien}</h3>
+            <p><strong>📍 Localisation :</strong> ${reponses.adresse}</p>
+            <p><strong>💰 Acquisition :</strong> ${totalAcquisition.toLocaleString()} €</p>
+            ${indicateursHtml}
+            <p><strong>⚡ DPE :</strong> ${dpe}</p>
+            <div style="background: #f8f9fa; border-left: 4px solid #3498db; padding: 10px; margin: 15px 0; font-size: 14px;">
+                Note technique : ${reponses.technique}
+            </div>
+            <div style="background: #2c3e50; color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: bold;">
+                SCORE DE LIQUIDITÉ : ${Math.max(0, Math.min(10, scoreLiquidite))}/10
+            </div>
+        </div>`;
+
+    document.getElementById("input-area").style.display = "none";
+    document.getElementById("btn-reset").style.display = "block";
+    ajouterMessage("Analyse technique terminée. Voici ton rapport **RealData Immo** :", "bot");
+    setTimeout(() => ajouterMessage(rapport, "bot"), 800);
+}
+
+document.getElementById("btn-valider").onclick = traiterSaisie;
+document.getElementById("user-input").onkeypress = (e) => { if (e.key === "Enter") traiterSaisie(); };
+
+window.onload = () => {
+    ajouterMessage("Bienvenue dans l'assistant <strong>RealData Immo</strong>.<br><br>Choisissez la catégorie :<br><strong>MAISON, APPARTEMENT, IMMEUBLE, TERRAIN, COMMERCE, PARKING</strong>", "bot");
+};
+</script>
+</body>
+</html>
