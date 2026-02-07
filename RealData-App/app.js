@@ -1,27 +1,28 @@
 import { calculerRapport } from "./calculator.js";
 
-let questions = [];
-let etapeActuelle = 0;
+let catalogueComplet = {}; 
+let questionsSelectionnees = []; 
+let etapeActuelle = -1; // -1 signifie qu'on attend de choisir le type de bien
 let reponses = {};
+let typeChoisi = "";
 
 const chatBox = document.getElementById("chat-box");
 const userInput = document.getElementById("user-input");
 const btnValider = document.getElementById("btn-valider");
 
-// On charge le questionnaire depuis le dossier
+// 1. Initialisation : Chargement du catalogue et accueil
 async function chargerConfiguration() {
   try {
+    // On charge le fichier JSON depuis son dossier
     const response = await fetch("RealData-App/parcours.json");
-    questions = await response.json();
-    afficherQuestion();
+    catalogueComplet = await response.json();
+    ajouterMessage("Salut Rudy ! Quel type de bien expertisons-nous ? (MAISON, APPARTEMENT, IMMEUBLE, TERRAIN, COMMERCE, PARKING)", "bot");
   } catch (error) {
-    ajouterMessage(
-      "Erreur : Impossible de charger le cerveau du chatbot.",
-      "bot",
-    );
+    ajouterMessage("Erreur : Le fichier parcours.json est introuvable ou mal formé.", "bot");
   }
 }
 
+// 2. Gestionnaire d'affichage des messages
 function ajouterMessage(texte, auteur) {
   const div = document.createElement("div");
   div.classList.add("msg", auteur);
@@ -30,35 +31,35 @@ function ajouterMessage(texte, auteur) {
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-function afficherQuestion() {
-  if (etapeActuelle < questions.length) {
-    ajouterMessage(questions[etapeActuelle].question, "bot");
-  } else {
-    finirExpertise();
-  }
-}
-
-function finirExpertise() {
-  const typeBien = reponses.type || "Bien immobilier";
-  const resultat = calculerRapport(reponses, typeBien);
-  ajouterMessage("### Expertise Terminée", "bot");
-  ajouterMessage(resultat.stats, "bot");
-}
-
-btnValider.onclick = () => {
+// 3. Logique de progression du Chatbot
+function gererReponse() {
   const texte = userInput.value.trim();
-  if (texte) {
-    ajouterMessage(texte, "user");
-    const cle = questions[etapeActuelle].id;
-    reponses[cle] = texte;
-    userInput.value = "";
+  if (!texte) return;
+
+  ajouterMessage(texte, "user");
+  userInput.value = "";
+
+  if (etapeActuelle === -1) {
+    // ÉTAPE : Déterminer la catégorie (MAISON, IMMEUBLE...)
+    const choix = texte.toUpperCase();
+    if (catalogueComplet[choix]) {
+      typeChoisi = choix;
+      questionsSelectionnees = catalogueComplet[choix];
+      reponses["type"] = choix;
+      etapeActuelle = 0;
+      setTimeout(poserQuestion, 500);
+    } else {
+      ajouterMessage("Ce type n'est pas reconnu. Choisis parmi : " + Object.keys(catalogueComplet).join(", "), "bot");
+    }
+  } else {
+    // ÉTAPE : Enregistrement de la réponse et suite
+    const questionCourante = questionsSelectionnees[etapeActuelle];
+    reponses[questionCourante.cle] = texte; // Utilise la clé définie dans ton JSON
     etapeActuelle++;
-    setTimeout(afficherQuestion, 500);
+    setTimeout(poserQuestion, 500);
   }
-};
+}
 
-userInput.onkeypress = (e) => {
-  if (e.key === "Enter") btnValider.click();
-};
-
-chargerConfiguration();
+// 4. Affichage de la question ou du rapport final
+function poserQuestion() {
+  if (etapeActuelle < questionsSelectionne
