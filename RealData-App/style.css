@@ -84,3 +84,39 @@ button {
   padding: 10px;
   cursor: pointer;
 }
+/* --- AJOUT DU FILIGRANE REALDATA --- */
+
+/* On s'assure que le conteneur principal est la référence */
+#chat-container {
+  position: relative;
+  /* z-index: 0;  <- Supprime cette ligne si elle existe déjà */
+}
+
+/* On crée un "calque" transparent juste derrière le contenu */
+#chat-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* On va chercher ton logo dans le dossier public */
+  background-image: url("../public/logo-final.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  /* Ajuste ce pourcentage si tu veux le logo plus ou moins grand */
+  background-size: 60% auto;
+  /* C'est ICI que tu règles la transparence (0.05 = très discret, 0.2 = très visible) */
+  opacity: 0.08;
+  /* On le place derrière le texte */
+  z-index: -1;
+}
+
+/* On s'assure que la conversation et le champ de saisie restent devant */
+#chat-box,
+#input-area {
+  position: relative;
+  z-index: 1;
+  /* Un fond légèrement transparent pour la zone de chat permet de mieux voir le logo */
+  background-color: rgba(255, 255, 255, 0.85);
+}
