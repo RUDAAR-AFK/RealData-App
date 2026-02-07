@@ -1,4 +1,13 @@
-/.vscode
-/node_modules
-/public
-/src
+# Dépendances (Très lourd, à ne pas push)
+node_modules/
+
+# Fichiers de configuration de l'éditeur
+.vscode/
+
+# Fichiers système Windows
+Thumbs.db
+desktop.ini
+
+# Fichiers de logs
+*.log
+node_modules/
