@@ -1,0 +1,32 @@
+{
+  "etapes": [
+    {
+      "id": "identite",
+      "titre": "📍 Identité du Bien",
+      "champs": [
+        { "id": "type_bien", "label": "Type (Maison/Appart)", "type": "text" },
+        { "id": "prix_fai", "label": "Prix FAI (€)", "type": "number" }
+      ]
+    },
+    {
+      "id": "technique",
+      "titre": "🏗️ Technique",
+      "champs": [
+        { "id": "surface", "label": "Surface (m²)", "type": "number" },
+        { "id": "dpe", "label": "Classe DPE", "type": "text" }
+      ]
+    },
+    {
+      "id": "juridique",
+      "titre": "⚖️ Juridique",
+      "champs": [
+        {
+          "id": "taxe_fonciere",
+          "label": "Taxe foncière (€)",
+          "type": "number"
+        },
+        { "id": "copro", "label": "Copropriété (Oui/Non)", "type": "text" }
+      ]
+    }
+  ]
+}
