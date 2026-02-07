@@ -2,7 +2,7 @@ import { calculerRapport } from "./calculator.js";
 
 let catalogueComplet = {};
 let questionsSelectionnees = [];
-let etapeActuelle = -1; // -1 signifie qu'on attend de choisir le type de bien
+let etapeActuelle = -1;
 let reponses = {};
 let typeChoisi = "";
 
@@ -10,10 +10,9 @@ const chatBox = document.getElementById("chat-box");
 const userInput = document.getElementById("user-input");
 const btnValider = document.getElementById("btn-valider");
 
-// 1. Initialisation : Chargement du catalogue et accueil
 async function chargerConfiguration() {
   try {
-    // On charge le fichier JSON depuis son dossier
+    // On cherche le fichier depuis la racine où se trouve l'index
     const response = await fetch("RealData-App/parcours.json");
     catalogueComplet = await response.json();
     ajouterMessage(
@@ -22,13 +21,12 @@ async function chargerConfiguration() {
     );
   } catch (error) {
     ajouterMessage(
-      "Erreur : Le fichier parcours.json est introuvable ou mal formé.",
+      "Erreur : Impossible de charger ton catalogue de questions.",
       "bot",
     );
   }
 }
 
-// 2. Gestionnaire d'affichage des messages
 function ajouterMessage(texte, auteur) {
   const div = document.createElement("div");
   div.classList.add("msg", auteur);
@@ -37,7 +35,6 @@ function ajouterMessage(texte, auteur) {
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// 3. Logique de progression du Chatbot
 function gererReponse() {
   const texte = userInput.value.trim();
   if (!texte) return;
@@ -46,7 +43,6 @@ function gererReponse() {
   userInput.value = "";
 
   if (etapeActuelle === -1) {
-    // ÉTAPE : Déterminer la catégorie (MAISON, IMMEUBLE...)
     const choix = texte.toUpperCase();
     if (catalogueComplet[choix]) {
       typeChoisi = choix;
@@ -56,30 +52,33 @@ function gererReponse() {
       setTimeout(poserQuestion, 500);
     } else {
       ajouterMessage(
-        "Ce type n'est pas reconnu. Choisis parmi : " +
+        "Ce type n'est pas dans ton fichier. Choisis parmi : " +
           Object.keys(catalogueComplet).join(", "),
         "bot",
       );
     }
   } else {
-    // ÉTAPE : Enregistrement de la réponse et suite
     const questionCourante = questionsSelectionnees[etapeActuelle];
-    reponses[questionCourante.cle] = texte; // Utilise la clé définie dans ton JSON
+    reponses[questionCourante.cle] = texte;
     etapeActuelle++;
     setTimeout(poserQuestion, 500);
   }
 }
 
-// 4. Affichage de la question ou du rapport final
-// 4. Affichage de la question ou du rapport final
 function poserQuestion() {
+  // CORRECTION ICI : La ligne qui faisait planter Prettier est réparée
   if (etapeActuelle < questionsSelectionnees.length) {
-    // On pioche la question dans la propriété "q" de ton fichier
     ajouterMessage(questionsSelectionnees[etapeActuelle].q, "bot");
   } else {
-    // On génère le dossier d'expertise final
     const resultat = calculerRapport(reponses, typeChoisi);
     ajouterMessage("### Expertise Terminée", "bot");
     ajouterMessage(resultat.stats, "bot");
   }
 }
+
+btnValider.onclick = gererReponse;
+userInput.onkeypress = (e) => {
+  if (e.key === "Enter") gererReponse();
+};
+
+chargerConfiguration();
