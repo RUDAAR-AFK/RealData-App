@@ -1,7 +1,7 @@
 import { calculerRapport } from "./calculator.js";
 
-let catalogueComplet = {}; 
-let questionsSelectionnees = []; 
+let catalogueComplet = {};
+let questionsSelectionnees = [];
 let etapeActuelle = -1; // -1 signifie qu'on attend de choisir le type de bien
 let reponses = {};
 let typeChoisi = "";
@@ -16,9 +16,15 @@ async function chargerConfiguration() {
     // On charge le fichier JSON depuis son dossier
     const response = await fetch("RealData-App/parcours.json");
     catalogueComplet = await response.json();
-    ajouterMessage("Salut Rudy ! Quel type de bien expertisons-nous ? (MAISON, APPARTEMENT, IMMEUBLE, TERRAIN, COMMERCE, PARKING)", "bot");
+    ajouterMessage(
+      "Salut Rudy ! Quel type de bien expertisons-nous ? (MAISON, APPARTEMENT, IMMEUBLE, TERRAIN, COMMERCE, PARKING)",
+      "bot",
+    );
   } catch (error) {
-    ajouterMessage("Erreur : Le fichier parcours.json est introuvable ou mal formé.", "bot");
+    ajouterMessage(
+      "Erreur : Le fichier parcours.json est introuvable ou mal formé.",
+      "bot",
+    );
   }
 }
 
@@ -49,7 +55,11 @@ function gererReponse() {
       etapeActuelle = 0;
       setTimeout(poserQuestion, 500);
     } else {
-      ajouterMessage("Ce type n'est pas reconnu. Choisis parmi : " + Object.keys(catalogueComplet).join(", "), "bot");
+      ajouterMessage(
+        "Ce type n'est pas reconnu. Choisis parmi : " +
+          Object.keys(catalogueComplet).join(", "),
+        "bot",
+      );
     }
   } else {
     // ÉTAPE : Enregistrement de la réponse et suite
@@ -61,5 +71,15 @@ function gererReponse() {
 }
 
 // 4. Affichage de la question ou du rapport final
+// 4. Affichage de la question ou du rapport final
 function poserQuestion() {
-  if (etapeActuelle < questionsSelectionne
+  if (etapeActuelle < questionsSelectionnees.length) {
+    // On pioche la question dans la propriété "q" de ton fichier
+    ajouterMessage(questionsSelectionnees[etapeActuelle].q, "bot");
+  } else {
+    // On génère le dossier d'expertise final
+    const resultat = calculerRapport(reponses, typeChoisi);
+    ajouterMessage("### Expertise Terminée", "bot");
+    ajouterMessage(resultat.stats, "bot");
+  }
+}
