@@ -13,7 +13,7 @@ body {
   max-width: 600px;
   background: white;
   border-radius: 12px;
-  height: 85vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -23,7 +23,7 @@ body {
 
 #chat-box {
   flex: 1;
-  padding: 20px;
+  padding: 15px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;

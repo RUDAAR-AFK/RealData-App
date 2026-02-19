@@ -39,7 +39,7 @@ async function chargerConfiguration() {
     const response = await fetch("RealData-App/parcours.json");
     catalogueComplet = await response.json();
     ajouterMessage(
-      "Salut Rudy ! Quel type de bien expertisons-nous ? (MAISON, APPARTEMENT, IMMEUBLE, TERRAIN, COMMERCE, PARKING)",
+      "Bonjour, Quel type de bien expertisons-nous ? (MAISON, APPARTEMENT, IMMEUBLE, TERRAIN, COMMERCE, PARKING)",
       "bot",
     );
   } catch (error) {
@@ -100,3 +100,13 @@ userInput.onkeypress = (e) => {
 };
 
 chargerConfiguration();
+// ... (tout ton code précédent)
+
+chargerConfiguration();
+
+// Force le scroll vers le bas quand le clavier de l'iPhone apparaît
+userInput.addEventListener("focus", () => {
+  setTimeout(() => {
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }, 300);
+});
