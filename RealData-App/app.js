@@ -36,6 +36,32 @@ function ajouterMessage(texte, auteur) {
 }
 
 function gererReponse() {
+  const fileInput = document.getElementById("file-input");
+  const btnPhoto = document.getElementById("btn-photo");
+
+  btnPhoto.onclick = () => fileInput.click();
+
+  fileInput.onchange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64Image = event.target.result;
+
+        // Lucia : On affiche la miniature dans le chat
+        ajouterMessage(
+          `<img src="${base64Image}" style="width:100px; border-radius:10px;">`,
+          "user",
+        );
+
+        // On stocke l'image et on passe à la suite
+        reponses[questionsSelectionnees[etapeActuelle].cle] = base64Image;
+        etapeActuelle++;
+        setTimeout(poserQuestion, 500);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
   const texte = userInput.value.trim();
   if (!texte) return;
 
@@ -67,6 +93,22 @@ function gererReponse() {
 
 function poserQuestion() {
   // CORRECTION ICI : La ligne qui faisait planter Prettier est réparée
+  function poserQuestion() {
+    if (etapeActuelle < questionsSelectionnees.length) {
+      const question = questionsSelectionnees[etapeActuelle];
+      ajouterMessage(question.q, "bot");
+
+      // Si la question demande une image, on montre le bouton photo
+      const btnPhoto = document.getElementById("btn-photo");
+      if (question.type === "image") {
+        btnPhoto.style.display = "inline-block";
+      } else {
+        btnPhoto.style.display = "none";
+      }
+    } else {
+      // ... reste de ton code de fin d'expertise
+    }
+  }
   if (etapeActuelle < questionsSelectionnees.length) {
     ajouterMessage(questionsSelectionnees[etapeActuelle].q, "bot");
   } else {

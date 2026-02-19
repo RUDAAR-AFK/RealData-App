@@ -30,10 +30,17 @@
     { "q": "4. Loyers annuels HC (€) ?", "cle": "loyer" },
     { "q": "5. Taxe Foncière (€) ?", "cle": "taxe" },
     { "q": "6. Note Gros Œuvre (1 à 5) ?", "cle": "n_tech" },
-    { "q": "7. Note Compteurs (1 à 5) ?", "cle": "n_res" },
-    { "q": "8. Adresse ?", "cle": "adresse" },
-    { "q": "9. Chauffage ?", "cle": "divers" },
-    { "q": "10. Potentiel division ?", "cle": "potentiel" }
+    { "q": "7. Note Gros Œuvre (1 à 5) ?", "cle": "n_tech" },
+    {
+      "q": "8. Prends une photo de la façade :",
+      "cle": "photo_facade",
+      "type": "image"
+    },
+    { "q": "9. Adresse ?", "cle": "adresse" },
+    { "q": "10. Note Compteurs (1 à 5) ?", "cle": "n_res" },
+    { "q": "11. Adresse ?", "cle": "adresse" },
+    { "q": "12. Chauffage ?", "cle": "divers" },
+    { "q": "13. Potentiel division ?", "cle": "potentiel" }
   ],
   "TERRAIN": [
     { "q": "1. Prix Net (€) ?", "cle": "prix" },
