@@ -4,7 +4,10 @@ body {
   display: flex;
   justify-content: center;
   padding: 20px;
+  /* Correction iPhone : Empêche les décalages lors du focus */
+  margin: 0;
 }
+
 #chat-container {
   width: 100%;
   max-width: 600px;
@@ -15,7 +18,9 @@ body {
   flex-direction: column;
   overflow: hidden;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  position: relative;
 }
+
 #chat-box {
   flex: 1;
   padding: 20px;
@@ -23,35 +28,55 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  background: #f8f9fa;
+  background: rgba(248, 249, 250, 0.85); /* Fond transparent pour le logo */
+  position: relative;
+  z-index: 1;
 }
+
 .msg {
   padding: 12px;
   border-radius: 15px;
   max-width: 80%;
+  word-wrap: break-word; /* Évite que le texte dépasse sur mobile */
 }
+
+/* Style pour les images envoyées dans le chat */
+.msg img {
+  max-width: 100%;
+  border-radius: 10px;
+  display: block;
+}
+
 .bot {
   background: white;
   border: 1px solid #ddd;
   align-self: flex-start;
 }
+
 .user {
   background: #2c3e50;
   color: white;
   align-self: flex-end;
 }
+
 #input-area {
   padding: 15px;
   display: flex;
   gap: 10px;
   border-top: 1px solid #eee;
+  position: relative;
+  z-index: 1;
 }
+
+/* Correction iPhone : Font-size à 16px minimum pour bloquer le zoom automatique */
 input {
   flex: 1;
   border-radius: 20px;
   border: 1px solid #ddd;
   padding: 10px;
+  font-size: 16px;
 }
+
 button {
   border-radius: 20px;
   border: none;
@@ -59,7 +84,31 @@ button {
   color: white;
   cursor: pointer;
   padding: 0 20px;
+  font-size: 16px;
 }
+
+/* --- MISE EN VALEUR DE LA GALERIE DANS LE RAPPORT --- */
+
+.galerie-rapport {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  margin-top: 15px;
+  padding: 10px;
+  background: #fdfdfd;
+  border-radius: 10px;
+  border: 1px solid #eee;
+}
+
+.galerie-rapport img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover; /* Recadre proprement les photos */
+  border-radius: 8px;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
 .report {
   border: 2px solid #2c3e50;
   padding: 15px;
@@ -67,6 +116,7 @@ button {
   margin-top: 10px;
   text-align: left;
 }
+
 .score {
   background: #2c3e50;
   color: white;
@@ -76,23 +126,18 @@ button {
   border-radius: 5px;
   margin-top: 10px;
 }
+
 #btn-reset {
-  display: none;
   background: #e74c3c;
   color: white;
   border: none;
   padding: 10px;
   cursor: pointer;
-}
-/* --- AJOUT DU FILIGRANE REALDATA --- */
-
-/* On s'assure que le conteneur principal est la référence */
-#chat-container {
-  position: relative;
-  /* z-index: 0;  <- Supprime cette ligne si elle existe déjà */
+  border-radius: 5px;
+  margin: 10px;
 }
 
-/* On crée un "calque" transparent juste derrière le contenu */
+/* --- FILIGRANE REALDATA --- */
 #chat-container::before {
   content: "";
   position: absolute;
@@ -100,23 +145,10 @@ button {
   left: 0;
   width: 100%;
   height: 100%;
-  /* On va chercher ton logo dans le dossier public */
   background-image: url("../public/logo-final.png");
   background-repeat: no-repeat;
   background-position: center;
-  /* Ajuste ce pourcentage si tu veux le logo plus ou moins grand */
   background-size: 60% auto;
-  /* C'est ICI que tu règles la transparence (0.05 = très discret, 0.2 = très visible) */
   opacity: 0.08;
-  /* On le place derrière le texte */
   z-index: -1;
-}
-
-/* On s'assure que la conversation et le champ de saisie restent devant */
-#chat-box,
-#input-area {
-  position: relative;
-  z-index: 1;
-  /* Un fond légèrement transparent pour la zone de chat permet de mieux voir le logo */
-  background-color: rgba(255, 255, 255, 0.85);
 }

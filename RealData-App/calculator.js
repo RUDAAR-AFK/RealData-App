@@ -13,6 +13,22 @@ export function calculerRapport(reponses, type) {
   const scoreGlobal = ((n_tech + n_res) / 10) * 10;
 
   // Génération du contenu pour le "Dossier Complet"
+  // Dans la partie où tu génères le texte du rapport (stats)
+  let sectionPhotos = "";
+  if (reponses.galerie && reponses.galerie.length > 0) {
+    sectionPhotos =
+      "<h3>🖼️ Galerie Photos du Bien :</h3><div class='galerie-rapport'>";
+    reponses.galerie.forEach((photo) => {
+      sectionPhotos += `<img src="${photo}" style="width: 100%; max-width: 300px; margin: 10px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">`;
+    });
+    sectionPhotos += "</div>";
+  }
+
+  // Puis tu ajoutes sectionPhotos à ton résultat final
+  return {
+    stats: `... tes calculs actuels ... ${sectionPhotos}`,
+    // ...
+  };
   const rapportExpertise = `
         <div id="dossier-immo" style="font-family: Arial, sans-serif; border: 2px solid #333; padding: 30px; background: white; color: #333;">
             <h1 style="text-align: center; border-bottom: 2px solid #27ae60; padding-bottom: 10px;">DOSSIER D'EXPERTISE IMMOBILIÈRE</h1>
