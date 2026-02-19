@@ -9,17 +9,38 @@
   <body>
     <div id="chat-container">
       <div id="chat-box"></div>
-      <div id="input-area">
+
+      <div id="input-area" style="display: flex; align-items: center; gap: 5px">
         <input
           type="file"
           id="file-input"
-          accept="image/*"
+          accept="image/*,application/pdf"
           style="display: none"
         />
-        <button id="btn-photo" style="display: none">📷</button>
-        <input type="text" id="user-input" placeholder="Répondez ici..." />
+
+        <button
+          id="btn-photo"
+          type="button"
+          style="
+            cursor: pointer;
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+          "
+        >
+          📷
+        </button>
+
+        <input
+          type="text"
+          id="user-input"
+          placeholder="Votre réponse"
+          style="flex-grow: 1"
+        />
+
         <button id="btn-valider">Valider</button>
       </div>
+
       <button id="btn-reset" onclick="location.reload()">Reset</button>
     </div>
 

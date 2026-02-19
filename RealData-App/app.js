@@ -9,10 +9,33 @@ let typeChoisi = "";
 const chatBox = document.getElementById("chat-box");
 const userInput = document.getElementById("user-input");
 const btnValider = document.getElementById("btn-valider");
+const fileInput = document.getElementById("file-input");
+const btnPhoto = document.getElementById("btn-photo");
+
+// 1. LIEN BOUTON PHOTO : On le met ici pour qu'il soit actif tout le temps
+btnPhoto.onclick = () => fileInput.click();
+
+fileInput.onchange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64Image = event.target.result;
+      ajouterMessage(
+        `<img src="${base64Image}" style="width:100px; border-radius:10px;">`,
+        "user",
+      );
+
+      // On stocke dans une galerie libre pour ne pas bloquer le questionnaire
+      if (!reponses.galerie) reponses.galerie = [];
+      reponses.galerie.push(base64Image);
+    };
+    reader.readAsDataURL(file);
+  }
+};
 
 async function chargerConfiguration() {
   try {
-    // On cherche le fichier depuis la racine où se trouve l'index
     const response = await fetch("RealData-App/parcours.json");
     catalogueComplet = await response.json();
     ajouterMessage(
@@ -20,10 +43,7 @@ async function chargerConfiguration() {
       "bot",
     );
   } catch (error) {
-    ajouterMessage(
-      "Erreur : Impossible de charger ton catalogue de questions.",
-      "bot",
-    );
+    ajouterMessage("Erreur : Impossible de charger ton catalogue.", "bot");
   }
 }
 
@@ -36,32 +56,6 @@ function ajouterMessage(texte, auteur) {
 }
 
 function gererReponse() {
-  const fileInput = document.getElementById("file-input");
-  const btnPhoto = document.getElementById("btn-photo");
-
-  btnPhoto.onclick = () => fileInput.click();
-
-  fileInput.onchange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const base64Image = event.target.result;
-
-        // Lucia : On affiche la miniature dans le chat
-        ajouterMessage(
-          `<img src="${base64Image}" style="width:100px; border-radius:10px;">`,
-          "user",
-        );
-
-        // On stocke l'image et on passe à la suite
-        reponses[questionsSelectionnees[etapeActuelle].cle] = base64Image;
-        etapeActuelle++;
-        setTimeout(poserQuestion, 500);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
   const texte = userInput.value.trim();
   if (!texte) return;
 
@@ -78,8 +72,7 @@ function gererReponse() {
       setTimeout(poserQuestion, 500);
     } else {
       ajouterMessage(
-        "Ce type n'est pas dans ton fichier. Choisis parmi : " +
-          Object.keys(catalogueComplet).join(", "),
+        "Choisis parmi : " + Object.keys(catalogueComplet).join(", "),
         "bot",
       );
     }
@@ -92,23 +85,6 @@ function gererReponse() {
 }
 
 function poserQuestion() {
-  // CORRECTION ICI : La ligne qui faisait planter Prettier est réparée
-  function poserQuestion() {
-    if (etapeActuelle < questionsSelectionnees.length) {
-      const question = questionsSelectionnees[etapeActuelle];
-      ajouterMessage(question.q, "bot");
-
-      // Si la question demande une image, on montre le bouton photo
-      const btnPhoto = document.getElementById("btn-photo");
-      if (question.type === "image") {
-        btnPhoto.style.display = "inline-block";
-      } else {
-        btnPhoto.style.display = "none";
-      }
-    } else {
-      // ... reste de ton code de fin d'expertise
-    }
-  }
   if (etapeActuelle < questionsSelectionnees.length) {
     ajouterMessage(questionsSelectionnees[etapeActuelle].q, "bot");
   } else {
