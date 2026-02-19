@@ -1,35 +1,34 @@
 // calculator.js
 
 export function calculerRapport(reponses, type) {
-  const prixNet = parseFloat(reponses.prix) || 0;
-  const honoraires = parseFloat(reponses.honoraires) || 0;
-  const prixFAI = prixNet + honoraires;
-  const surface = parseFloat(reponses.surface) || 0;
-  const prixM2 = surface > 0 ? Math.round(prixFAI / surface) : 0;
+    const prixNet = parseFloat(reponses.prix) || 0;
+    const honoraires = parseFloat(reponses.honoraires) || 0;
+    const prixFAI = prixNet + honoraires;
+    const surface = parseFloat(reponses.surface) || 0;
+    const prixM2 = surface > 0 ? Math.round(prixFAI / surface) : 0;
 
-  // Calcul du score technique basé sur tes notes de 1 à 5
-  const n_tech = parseInt(reponses.n_tech) || 0;
-  const n_res = parseInt(reponses.n_res) || 0;
-  const scoreGlobal = ((n_tech + n_res) / 10) * 10;
+    // Calcul du score technique basé sur tes notes de 1 à 5
+    const n_tech = parseInt(reponses.n_tech) || 0;
+    const n_res = parseInt(reponses.n_res) || 0;
+    const scoreGlobal = ((n_tech + n_res) / 10) * 10;
 
-  // Génération du contenu pour le "Dossier Complet"
-  // Dans la partie où tu génères le texte du rapport (stats)
-  let sectionPhotos = "";
-  if (reponses.galerie && reponses.galerie.length > 0) {
-    sectionPhotos =
-      "<h3>🖼️ Galerie Photos du Bien :</h3><div class='galerie-rapport'>";
-    reponses.galerie.forEach((photo) => {
-      sectionPhotos += `<img src="${photo}" style="width: 100%; max-width: 300px; margin: 10px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">`;
-    });
-    sectionPhotos += "</div>";
-  }
+    // 1. PRÉPARATION DE LA GALERIE PHOTOS
+    let sectionPhotos = "";
+    if (reponses.galerie && reponses.galerie.length > 0) {
+        sectionPhotos = `
+            <section style="margin-top: 20px;">
+                <h2>🖼️ Galerie Photos du Bien</h2>
+                <div class="galerie-rapport">`;
+        
+        reponses.galerie.forEach((photo) => {
+            sectionPhotos += `<img src="${photo}" class="img-rapport">`;
+        });
+        
+        sectionPhotos += `</div></section>`;
+    }
 
-  // Puis tu ajoutes sectionPhotos à ton résultat final
-  return {
-    stats: `... tes calculs actuels ... ${sectionPhotos}`,
-    // ...
-  };
-  const rapportExpertise = `
+    // 2. GÉNÉRATION DU RAPPORT HTML
+    const rapportExpertise = `
         <div id="dossier-immo" style="font-family: Arial, sans-serif; border: 2px solid #333; padding: 30px; background: white; color: #333;">
             <h1 style="text-align: center; border-bottom: 2px solid #27ae60; padding-bottom: 10px;">DOSSIER D'EXPERTISE IMMOBILIÈRE</h1>
             <p style="text-align: right;"><em>Généré le : ${new Date().toLocaleDateString()}</em></p>
@@ -58,8 +57,10 @@ export function calculerRapport(reponses, type) {
                 <p><strong>Observations :</strong> ${reponses.divers || "Aucune"}</p>
             </section>
 
+            ${sectionPhotos}
+
             <div style="margin-top: 40px; text-align: center; font-size: 0.8em; color: #777;">
-                Expertise réalisée avec l'outil RealData Immo
+                Expertise réalisée par Rudy LE DISEZ - Outil RealData Immo
             </div>
         </div>
         <button onclick="window.print()" style="margin-top: 20px; width: 100%; padding: 15px; background: #2c3e50; color: white; border: none; border-radius: 5px; cursor: pointer;">
@@ -67,10 +68,11 @@ export function calculerRapport(reponses, type) {
         </button>
     `;
 
-  return {
-    total: prixFAI.toLocaleString(),
-    dpe: reponses.dpe || "NC",
-    stats: rapportExpertise,
-    score: scoreGlobal,
-  };
+    // 3. RETOUR DES DONNÉES (Un seul return à la fin !)
+    return {
+        total: prixFAI.toLocaleString(),
+        dpe: reponses.dpe || "NC",
+        stats: rapportExpertise,
+        score: scoreGlobal,
+    };
 }

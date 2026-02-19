@@ -13,7 +13,7 @@ body {
   max-width: 600px;
   background: white;
   border-radius: 12px;
-  height: 100dvh;
+  height: 100dvh; /* S'adapte dynamiquement quand le clavier sort */
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -25,10 +25,11 @@ body {
   flex: 1;
   padding: 15px;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* Rend le défilement fluide sur iOS */
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  background: rgba(248, 249, 250, 0.85); /* Fond transparent pour le logo */
+  gap: 12px;
+  background: rgba(248, 249, 250, 0.85);
   position: relative;
   z-index: 1;
 }
@@ -126,17 +127,6 @@ button {
   border-radius: 5px;
   margin-top: 10px;
 }
-
-#btn-reset {
-  background: #e74c3c;
-  color: white;
-  border: none;
-  padding: 10px;
-  cursor: pointer;
-  border-radius: 5px;
-  margin: 10px;
-}
-
 /* --- FILIGRANE REALDATA --- */
 #chat-container::before {
   content: "";
