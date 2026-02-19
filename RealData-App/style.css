@@ -25,10 +25,11 @@ body {
   flex: 1;
   padding: 15px;
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch; /* Rend le défilement fluide sur iOS */
+  -webkit-overflow-scrolling: touch;
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  /* CHANGEMENT ICI : Inversion de l'ordre pour coller la question en bas */
+  flex-direction: column-reverse;
+  gap: 10px;
   background: rgba(248, 249, 250, 0.85);
   position: relative;
   z-index: 1;

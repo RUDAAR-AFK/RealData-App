@@ -27,7 +27,7 @@ export function calculerRapport(reponses, type) {
         sectionPhotos += `</div></section>`;
     }
 
-    // 2. GÉNÉRATION DU RAPPORT HTML
+    // 2. GÉNÉRATION DU RAPPORT HTML (Ton grand dossier complet)
     const rapportExpertise = `
         <div id="dossier-immo" style="font-family: Arial, sans-serif; border: 2px solid #333; padding: 30px; background: white; color: #333;">
             <h1 style="text-align: center; border-bottom: 2px solid #27ae60; padding-bottom: 10px;">DOSSIER D'EXPERTISE IMMOBILIÈRE</h1>
@@ -68,7 +68,6 @@ export function calculerRapport(reponses, type) {
         </button>
     `;
 
-    // 3. RETOUR DES DONNÉES (Un seul return à la fin !)
     return {
         total: prixFAI.toLocaleString(),
         dpe: reponses.dpe || "NC",
