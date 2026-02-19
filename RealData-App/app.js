@@ -12,7 +12,7 @@ const btnValider = document.getElementById("btn-valider");
 const fileInput = document.getElementById("file-input");
 const btnPhoto = document.getElementById("btn-photo");
 
-// 1. LIEN BOUTON PHOTO : On le met ici pour qu'il soit actif tout le temps
+// 1. LIEN BOUTON PHOTO
 btnPhoto.onclick = () => fileInput.click();
 
 fileInput.onchange = (e) => {
@@ -26,7 +26,6 @@ fileInput.onchange = (e) => {
         "user",
       );
 
-      // On stocke dans une galerie libre pour ne pas bloquer le questionnaire
       if (!reponses.galerie) reponses.galerie = [];
       reponses.galerie.push(base64Image);
     };
@@ -47,12 +46,15 @@ async function chargerConfiguration() {
   }
 }
 
+// 2. OPTIMISATION DU SCROLL DANS LES MESSAGES
 function ajouterMessage(texte, auteur) {
   const div = document.createElement("div");
   div.classList.add("msg", auteur);
   div.innerHTML = texte;
   chatBox.appendChild(div);
-  chatBox.scrollTop = chatBox.scrollHeight;
+
+  // Utilisation de scrollIntoView pour un ancrage plus solide sur mobile
+  div.scrollIntoView({ behavior: "smooth", block: "end" });
 }
 
 function gererReponse() {
@@ -99,14 +101,19 @@ userInput.onkeypress = (e) => {
   if (e.key === "Enter") gererReponse();
 };
 
-chargerConfiguration();
-// ... (tout ton code précédent)
-
+// 3. APPEL UNIQUE DE LA CONFIGURATION (Correction du doublon)
 chargerConfiguration();
 
-// Force le scroll vers le bas quand le clavier de l'iPhone apparaît
+// 4. GESTION DU FOCUS CLAVIER IPHONE
 userInput.addEventListener("focus", () => {
   setTimeout(() => {
-    chatBox.scrollTop = chatBox.scrollHeight;
+    // Force le dernier message (la question) à rester visible au-dessus du clavier
+    const derniersMessages = chatBox.querySelectorAll(".msg");
+    if (derniersMessages.length > 0) {
+      derniersMessages[derniersMessages.length - 1].scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
   }, 300);
 });

@@ -27,8 +27,7 @@ body {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   display: flex;
-  /* CHANGEMENT ICI : Inversion de l'ordre pour coller la question en bas */
-  flex-direction: column-reverse;
+  flex-direction: column;
   gap: 10px;
   background: rgba(248, 249, 250, 0.85);
   position: relative;
