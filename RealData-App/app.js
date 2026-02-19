@@ -9,52 +9,29 @@ let typeChoisi = "";
 const chatBox = document.getElementById("chat-box");
 const userInput = document.getElementById("user-input");
 const btnValider = document.getElementById("btn-valider");
-const fileInput = document.getElementById("file-input");
-const btnPhoto = document.getElementById("btn-photo");
-
-// 1. LIEN BOUTON PHOTO
-btnPhoto.onclick = () => fileInput.click();
-
-fileInput.onchange = (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const base64Image = event.target.result;
-      ajouterMessage(
-        `<img src="${base64Image}" style="width:100px; border-radius:10px;">`,
-        "user",
-      );
-
-      if (!reponses.galerie) reponses.galerie = [];
-      reponses.galerie.push(base64Image);
-    };
-    reader.readAsDataURL(file);
-  }
-};
 
 async function chargerConfiguration() {
   try {
     const response = await fetch("RealData-App/parcours.json");
     catalogueComplet = await response.json();
     ajouterMessage(
-      "Bonjour, Quel type de bien expertisons-nous ? (MAISON, APPARTEMENT, IMMEUBLE, TERRAIN, COMMERCE, PARKING)",
+      "Salut Rudy ! Quel type de bien expertisons-nous ? (MAISON, APPARTEMENT, IMMEUBLE, TERRAIN, COMMERCE, PARKING)",
       "bot",
     );
   } catch (error) {
-    ajouterMessage("Erreur : Impossible de charger ton catalogue.", "bot");
+    ajouterMessage(
+      "Erreur : Impossible de charger ton catalogue de questions.",
+      "bot",
+    );
   }
 }
 
-// 2. OPTIMISATION DU SCROLL DANS LES MESSAGES
 function ajouterMessage(texte, auteur) {
   const div = document.createElement("div");
   div.classList.add("msg", auteur);
   div.innerHTML = texte;
   chatBox.appendChild(div);
-
-  // Utilisation de scrollIntoView pour un ancrage plus solide sur mobile
-  div.scrollIntoView({ behavior: "smooth", block: "end" });
+  chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 function gererReponse() {
@@ -74,7 +51,8 @@ function gererReponse() {
       setTimeout(poserQuestion, 500);
     } else {
       ajouterMessage(
-        "Choisis parmi : " + Object.keys(catalogueComplet).join(", "),
+        "Ce type n'est pas dans ton fichier. Choisis parmi : " +
+          Object.keys(catalogueComplet).join(", "),
         "bot",
       );
     }
@@ -101,19 +79,4 @@ userInput.onkeypress = (e) => {
   if (e.key === "Enter") gererReponse();
 };
 
-// 3. APPEL UNIQUE DE LA CONFIGURATION (Correction du doublon)
 chargerConfiguration();
-
-// 4. GESTION DU FOCUS CLAVIER IPHONE
-userInput.addEventListener("focus", () => {
-  setTimeout(() => {
-    // Force le dernier message (la question) à rester visible au-dessus du clavier
-    const derniersMessages = chatBox.querySelectorAll(".msg");
-    if (derniersMessages.length > 0) {
-      derniersMessages[derniersMessages.length - 1].scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-    }
-  }, 300);
-});

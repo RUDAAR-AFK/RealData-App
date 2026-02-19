@@ -3,47 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"
-    />
     <title>RealData Immo - Expert</title>
     <link rel="stylesheet" href="RealData-App/style.css" />
   </head>
   <body>
     <div id="chat-container">
       <div id="chat-box"></div>
-
-      <div id="input-area" style="display: flex; align-items: center; gap: 5px">
+      <div id="input-area">
         <input
           type="file"
           id="file-input"
-          accept="image/*,application/pdf"
+          accept="image/*"
           style="display: none"
         />
-
-        <button
-          id="btn-photo"
-          type="button"
-          style="
-            cursor: pointer;
-            font-size: 1.5rem;
-            background: none;
-            border: none;
-          "
-        >
-          📷
-        </button>
-
-        <input
-          type="text"
-          id="user-input"
-          placeholder="Votre réponse"
-          style="flex-grow: 1"
-        />
-
+        <button id="btn-photo" style="display: none">📷</button>
+        <input type="text" id="user-input" placeholder="Votre réponse" />
         <button id="btn-valider">Valider</button>
       </div>
+      <button id="btn-reset" onclick="location.reload()">Reset</button>
     </div>
 
     <script type="module" src="RealData-App/app.js"></script>

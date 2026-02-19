@@ -4,80 +4,54 @@ body {
   display: flex;
   justify-content: center;
   padding: 20px;
-  /* Correction iPhone : Empêche les décalages lors du focus */
-  margin: 0;
 }
-
 #chat-container {
   width: 100%;
   max-width: 600px;
   background: white;
   border-radius: 12px;
-  height: 100dvh; /* S'adapte dynamiquement quand le clavier sort */
+  height: 85vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  position: relative;
 }
-
 #chat-box {
   flex: 1;
-  padding: 15px;
+  padding: 20px;
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  background: rgba(248, 249, 250, 0.85);
-  position: relative;
-  z-index: 1;
+  background: #f8f9fa;
 }
-
 .msg {
   padding: 12px;
   border-radius: 15px;
   max-width: 80%;
-  word-wrap: break-word; /* Évite que le texte dépasse sur mobile */
 }
-
-/* Style pour les images envoyées dans le chat */
-.msg img {
-  max-width: 100%;
-  border-radius: 10px;
-  display: block;
-}
-
 .bot {
   background: white;
   border: 1px solid #ddd;
   align-self: flex-start;
 }
-
 .user {
   background: #2c3e50;
   color: white;
   align-self: flex-end;
 }
-
 #input-area {
   padding: 15px;
   display: flex;
   gap: 10px;
   border-top: 1px solid #eee;
-  position: relative;
-  z-index: 1;
 }
-
-/* Correction iPhone : Font-size à 16px minimum pour bloquer le zoom automatique */
 input {
   flex: 1;
   border-radius: 20px;
   border: 1px solid #ddd;
   padding: 10px;
-  font-size: 16px;
 }
-
 button {
   border-radius: 20px;
   border: none;
@@ -85,31 +59,7 @@ button {
   color: white;
   cursor: pointer;
   padding: 0 20px;
-  font-size: 16px;
 }
-
-/* --- MISE EN VALEUR DE LA GALERIE DANS LE RAPPORT --- */
-
-.galerie-rapport {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 10px;
-  margin-top: 15px;
-  padding: 10px;
-  background: #fdfdfd;
-  border-radius: 10px;
-  border: 1px solid #eee;
-}
-
-.galerie-rapport img {
-  width: 100%;
-  height: 120px;
-  object-fit: cover; /* Recadre proprement les photos */
-  border-radius: 8px;
-  border: 2px solid #fff;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
 .report {
   border: 2px solid #2c3e50;
   padding: 15px;
@@ -117,7 +67,6 @@ button {
   margin-top: 10px;
   text-align: left;
 }
-
 .score {
   background: #2c3e50;
   color: white;
@@ -127,18 +76,11 @@ button {
   border-radius: 5px;
   margin-top: 10px;
 }
-/* --- FILIGRANE REALDATA --- */
-#chat-container::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: url("../public/logo-final.png");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 60% auto;
-  opacity: 0.08;
-  z-index: -1;
+#btn-reset {
+  display: none;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
 }
